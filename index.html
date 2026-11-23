@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NurseTunes · สำรวจเพลงที่ชอบของ นศ.พยาบาล</title>
+<meta name="description" content="แบบสำรวจเพลงที่ชอบ/ฟังบ่อยในตอนนี้ของนักศึกษาพยาบาล พร้อมพรีวิวตัวอย่างเพลงและแดชบอร์ดสรุปผล">
+<meta name="theme-color" content="#0f0f0f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24'%3E%3Crect width='32' height='24' rx='7' fill='%23f00'/%3E%3Cpath d='M12 6v12l10-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script>(function(){try{var t=localStorage.getItem('nursetunes.theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+<style>
+/* ===================== Design tokens (YouTube-inspired) ===================== */
+:root{
+  --font:"Roboto","Noto Sans Thai","Sarabun","Leelawadee UI","Thonburi",Tahoma,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --red:#ff0000;          /* brand + chart series */
+  --red-btn:#e60000;      /* filled buttons (white text ≥ 4.5:1) */
+  --red-btn-h:#cc0000;
+  --hdr-h:56px;
+  --side-w:240px;
+  --side-mini:72px;
+  --r:12px;
+  --ease:cubic-bezier(.2,0,0,1);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f0f0f; --surface:#181818; --surface-2:#212121; --chip:#272727; --chip-h:#3f3f3f;
+  --text:#f1f1f1; --text-2:#aaaaaa; --muted:#8a8a8a;
+  --line:#303030; --line-strong:#4a4a4a; --grid:#2c2c2c; --axis:#3f3f3f;
+  --link:#3ea6ff; --series:#ff0000; --track:#3a1a1a; --area:rgba(255,0,0,.10);
+  --good:#0ca30c; --scrim:rgba(0,0,0,.6); --tip-bg:#f1f1f1; --tip-fg:#0f0f0f;
+  --skel-a:#222; --skel-b:#2c2c2c;
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --bg:#ffffff; --surface:#f7f7f7; --surface-2:#f2f2f2; --chip:#f2f2f2; --chip-h:#e5e5e5;
+  --text:#0f0f0f; --text-2:#606060; --muted:#707070;
+  --line:#e5e5e5; --line-strong:#c9c9c9; --grid:#e8e8e8; --axis:#cfcfcf;
+  --link:#065fd4; --series:#ff0000; --track:#fde3e3; --area:rgba(255,0,0,.10);
+  --good:#006300; --scrim:rgba(0,0,0,.4); --tip-bg:#212121; --tip-fg:#ffffff;
+  --skel-a:#ececec; --skel-b:#f6f6f6;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,p{margin:0}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.ic{width:24px;height:24px;fill:currentColor;flex:none;display:block}
+
+/* ============================== Header ============================== */
+.hdr{position:fixed;inset:0 0 auto 0;height:var(--hdr-h);z-index:60;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px;background:var(--bg)}
+.hdr-l{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.hdr-c{flex:0 1 640px;min-width:0;display:flex;justify-content:center}
+.hdr-r{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--text);transition:background .15s}
+.iconbtn:hover{background:var(--chip)}
+.iconbtn[aria-pressed="true"]{background:var(--chip)}
+.logo{display:flex;align-items:center;gap:5px;padding:0 4px;height:40px;border-radius:8px}
+.logo-mark{width:30px;height:21px;border-radius:6px;background:var(--red);display:grid;place-items:center}
+.logo-mark svg{width:12px;height:12px;fill:#fff;margin-left:1px}
+.logo-word{font-size:19px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.logo-word b{font-weight:700}
+.logo-tag{font-size:10px;color:var(--text-2);align-self:flex-start;margin-top:8px;letter-spacing:.02em}
+.search{display:flex;align-items:center;width:100%;max-width:560px;height:40px;border:1px solid var(--line-strong);border-radius:40px;background:var(--bg);overflow:hidden;transition:border-color .15s}
+.search:focus-within{border-color:var(--link)}
+.search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;padding:0 16px;font-size:15px}
+.search input::placeholder{color:var(--muted)}
+.search .clear{width:36px;height:36px;border:0;background:transparent;border-radius:50%;display:none;place-items:center;color:var(--text-2);margin-right:2px}
+.search.has-q .clear{display:grid}
+.search .go{width:64px;height:100%;border:0;border-left:1px solid var(--line-strong);background:var(--chip);display:grid;place-items:center}
+.search .go:hover{background:var(--chip-h)}
+.avatar-btn{width:32px;height:32px;border-radius:50%;margin:0 8px 0 6px;display:grid;place-items:center;background:linear-gradient(135deg,#ff4e45,#c00);color:#fff;font-size:16px}
+.mobile-search-btn{display:none}
+
+/* ============================== Sidebar ============================== */
+.side{position:fixed;top:var(--hdr-h);bottom:0;left:0;width:var(--side-w);padding:12px;overflow-y:auto;background:var(--bg);z-index:50;transition:width .2s var(--ease),transform .2s var(--ease)}
+.nav-i{display:flex;align-items:center;gap:20px;width:100%;height:40px;padding:0 12px;border-radius:10px;border:0;background:transparent;font-size:14px;color:var(--text);text-align:left}
+.nav-i:hover{background:var(--chip)}
+.nav-i[aria-current="page"]{background:var(--chip);font-weight:600}
+.nav-i .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-i .cnt{margin-left:auto;font-size:12px;color:var(--text-2)}
+.side hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.side-h{font-size:12px;color:var(--text-2);padding:4px 12px;letter-spacing:.02em}
+.side-foot{padding:8px 12px;font-size:12px;color:var(--text-2);line-height:1.6}
+.mode-pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;background:var(--chip);font-size:12px;color:var(--text)}
+.mode-pill i{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+.mode-pill.live i{background:var(--good)}
+body.mini .side{width:var(--side-mini)}
+body.mini .nav-i{flex-direction:column;gap:4px;height:auto;padding:14px 0 12px;font-size:10px;justify-content:center;text-align:center}
+body.mini .nav-i .cnt,body.mini .side hr,body.mini .side-h,body.mini .side-foot{display:none}
+body.mini .main{margin-left:var(--side-mini)}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:45;display:none}
+
+/* ============================== Main ============================== */
+.main{margin-left:var(--side-w);padding:calc(var(--hdr-h) + 20px) 24px 64px;transition:margin .2s var(--ease);min-height:100vh}
+.view{max-width:1400px;margin:0 auto}
+.banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);margin-bottom:16px;font-size:13px}
+.banner .grow{flex:1;min-width:200px;color:var(--text-2)}
+.banner.err{border-color:#ff4e45}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 16px;border-radius:18px;border:0;background:var(--chip);color:var(--text);font-weight:500;font-size:14px;white-space:nowrap;transition:background .15s}
+.btn:hover{background:var(--chip-h)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.red{background:var(--red-btn);color:#fff}
+.btn.red:hover{background:var(--red-btn-h)}
+.btn.ghost{background:transparent;border:1px solid var(--line-strong)}
+.btn.ghost:hover{background:var(--chip)}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.btn svg.ic{width:20px;height:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:0;background:var(--chip);color:var(--text);font-weight:500;font-size:14px;white-space:nowrap}
+.chip:hover{background:var(--chip-h)}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.chip.static{cursor:default}
+.chip .x{opacity:.7;font-size:16px;line-height:1}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:var(--chip);font-size:12px;color:var(--text);white-space:nowrap}
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.page-h h1{font-size:24px;line-height:1.3;font-weight:700;letter-spacing:-.01em}
+.page-h .sub{color:var(--text-2);font-size:14px;margin-top:2px}
+.page-h .acts{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{font-size:16px;font-weight:600;line-height:1.4}
+.card .cap{color:var(--text-2);font-size:12.5px;margin-top:2px}
+
+/* ============================== Avatars / thumbs ============================== */
+.av{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:600;font-size:15px;color:#fff;background:hsl(var(--h,0) 48% 38%);user-select:none}
+.av.sm{width:28px;height:28px;font-size:12.5px}
+.av.lg{width:48px;height:48px;font-size:20px}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,hsl(var(--h,0) 55% 30%),hsl(calc(var(--h,0) + 50) 55% 14%));isolation:isolate;transition:border-radius .2s}
+.thumb .bgimg{position:absolute;inset:-14px;background-size:cover;background-position:center;filter:blur(18px) brightness(.6) saturate(1.2);z-index:0}
+.thumb img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.thumb img.square{position:absolute;left:50%;top:50%;height:78%;aspect-ratio:1;transform:translate(-50%,-50%);object-fit:cover;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:1}
+.thumb .nt{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.5);z-index:1}
+.thumb .nt svg{width:38px;height:38px}
+.thumb .badge{position:absolute;right:6px;bottom:6px;z-index:2;background:rgba(0,0,0,.8);color:#fff;font-size:12px;font-weight:500;padding:1px 6px;border-radius:4px;line-height:1.5}
+.thumb .pend{position:absolute;left:0;right:0;bottom:0;z-index:2;text-align:center;padding:6px;background:rgba(0,0,0,.55);color:#fff;font-size:12.5px}
+.thumb.pending{background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--chip) 10px 20px)}
+.thumb.pending .nt{color:var(--muted)}
+.thumb .hov{position:absolute;inset:0;z-index:2;display:grid;place-items:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.28)}
+.thumb .hov i{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.7);display:grid;place-items:center;color:#fff}
+.vcard:hover .thumb .hov{opacity:1}
+.vcard:hover .thumb{border-radius:0}
+
+/* ============================== Video cards (people feed) ============================== */
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px 16px}
+.vcard{display:block;border-radius:12px;color:inherit}
+.vinfo{display:flex;gap:12px;margin-top:12px;padding-right:8px}
+.vtext{min-width:0}
+.vtitle{font-size:16px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.vsub{font-size:13px;color:var(--text-2);line-height:1.5}
+.vsub.one{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcard.pend .vtitle{color:var(--text-2);font-weight:500}
+.chips-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sticky-chips{position:sticky;top:var(--hdr-h);z-index:20;background:var(--bg);padding:10px 0 12px;margin:0 0 8px;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.sticky-chips::-webkit-scrollbar{display:none}
+.sticky-chips .sep{width:1px;height:24px;background:var(--line-strong);flex:none;margin:0 4px}
+.sticky-chips .sort{margin-left:auto;flex:none;display:flex;align-items:center;gap:8px;color:var(--text-2);font-size:13px}
+.select{height:32px;border-radius:8px;border:0;background:var(--chip);padding:0 28px 0 10px;font-size:13px;-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--text-2) 50%),linear-gradient(135deg,var(--text-2) 50%,transparent 50%);background-position:calc(100% - 15px) 14px,calc(100% - 10px) 14px;background-size:5px 5px;background-repeat:no-repeat}
+.empty{padding:48px 16px;text-align:center;color:var(--text-2)}
+.empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+
+/* ============================== Submit view ============================== */
+.hero{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.hero h1{font-size:28px;line-height:1.35;font-weight:700;letter-spacing:-.015em}
+.hero p{color:var(--text-2);margin-top:4px;max-width:640px}
+.hero .course{display:flex;gap:8px;flex-wrap:wrap}
+.submit-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);grid-template-areas:"a p" "b p";gap:16px;align-items:start}
+.sg-a{grid-area:a}.sg-b{grid-area:b}.sg-p{grid-area:p;position:sticky;top:calc(var(--hdr-h) + 16px)}
+.step{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step .n{width:24px;height:24px;border-radius:50%;background:var(--text);color:var(--bg);font-size:13px;font-weight:700;display:grid;place-items:center;flex:none}
+.step h2{font-size:16px}
+.field{display:block;margin-top:14px}
+.field>span.l{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:500;margin-bottom:6px}
+.field>span.l em{font-style:normal;color:var(--text-2);font-weight:400}
+.field .req{color:#ff4e45;margin-left:2px}
+.inp,.field textarea{width:100%;height:46px;border-radius:12px;border:1px solid var(--line-strong);background:var(--bg);padding:0 14px;font-size:15px;outline:0;transition:border-color .15s,box-shadow .15s}
+.field textarea{height:auto;min-height:76px;padding:10px 14px;resize:vertical;line-height:1.5}
+.inp:focus,.field textarea:focus{border-color:var(--link);box-shadow:0 0 0 3px color-mix(in srgb,var(--link) 22%,transparent)}
+.inp::placeholder,.field textarea::placeholder{color:var(--muted)}
+.inp.bad{border-color:#ff4e45}
+.help{font-size:12.5px;color:var(--text-2);margin-top:6px}
+.help.err{color:#ff6f66}
+.help.ok{color:var(--good)}
+html[data-theme="light"] .help.err{color:#c4291c}
+.combo{position:relative}
+.combo-box{position:relative}
+.combo-box svg.ic{position:absolute;left:12px;top:11px;width:22px;height:22px;color:var(--text-2);pointer-events:none}
+.combo-box .inp{padding-left:44px;padding-right:40px}
+.combo-box .clr{position:absolute;right:6px;top:5px;width:36px;height:36px;border-radius:50%;border:0;background:transparent;display:none;place-items:center;color:var(--text-2)}
+.combo-box .clr:hover{background:var(--chip)}
+.combo.has-v .clr{display:grid}
+.listbox{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 6px);max-height:320px;overflow-y:auto;margin:0;padding:6px;list-style:none;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.opt{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:8px;cursor:pointer}
+.opt[aria-selected="true"],.opt:hover{background:var(--chip-h)}
+.opt .nm{min-width:0;flex:1}
+.opt .nm b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt .nm small{color:var(--text-2);font-size:12px}
+.opt .st{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.opt .st.done{color:var(--good)}
+.opt .st svg.ic{width:16px;height:16px}
+.lb-empty{padding:16px;text-align:center;color:var(--text-2)}
+.picked{display:flex;align-items:center;gap:12px;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.picked .nm{min-width:0;flex:1}
+.picked .nm b{display:block;font-weight:600}
+.picked .nm small{color:var(--text-2)}
+.notice{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;color:var(--text-2)}
+.notice b{color:var(--text)}
+.tagpick{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tagpick .chip{height:30px;font-size:13px}
+.tagpick .chip[aria-disabled="true"]{opacity:.4;pointer-events:none}
+.tag-add{display:flex;gap:8px;margin-top:10px}
+.tag-add .inp{height:36px;font-size:13.5px}
+.counter{font-variant-numeric:tabular-nums}
+.form-actions{display:flex;gap:8px;align-items:center;margin-top:20px;flex-wrap:wrap}
+.form-actions .btn.red{height:40px;padding:0 24px;font-size:15px}
+
+/* ============================== Preview / players ============================== */
+.pv-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pv-h h2{display:flex;align-items:center;gap:8px}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.live-dot i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.player{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;isolation:isolate;color:#fff}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
+.pl-bg{position:absolute;inset:-24px;background-size:cover;background-position:center;filter:blur(30px) brightness(.5) saturate(1.3);z-index:0}
+.pl-bg.none{inset:0;filter:none;background:linear-gradient(135deg,hsl(var(--h,0) 55% 28%),hsl(calc(var(--h,0) + 50) 55% 12%))}
+.pl-disc{position:absolute;left:50%;top:45%;height:68%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:1;background:repeating-radial-gradient(circle at center,#0b0b0b 0 2px,#1b1b1b 2px 4px);box-shadow:0 14px 44px rgba(0,0,0,.6),inset 0 0 0 2px #2a2a2a;display:grid;place-items:center;animation:spin 7s linear infinite;animation-play-state:paused}
+.player.playing .pl-disc{animation-play-state:running}
+.pl-disc .lab{width:42%;aspect-ratio:1;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,hsl(var(--h,0) 55% 40%),hsl(calc(var(--h,0) + 50) 55% 22%));box-shadow:0 0 0 3px #111}
+.pl-disc .lab img{width:100%;height:100%;object-fit:cover}
+.pl-disc .lab svg{width:40%;height:40%;fill:rgba(255,255,255,.75)}
+.pl-disc::after{content:"";position:absolute;width:6%;aspect-ratio:1;border-radius:50%;background:#0b0b0b;box-shadow:0 0 0 2px #333}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.pl-hit{position:absolute;inset:0;z-index:2;border:0;background:transparent;display:grid;place-items:center;padding:0}
+.pl-hit .bigplay{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.65);display:grid;place-items:center;transition:opacity .2s,transform .2s;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.pl-hit .bigplay svg{width:32px;height:32px;fill:#fff}
+.pl-hit:hover .bigplay{transform:scale(1.06);background:var(--red)}
+.player.playing .pl-hit .bigplay{opacity:0}
+.player.playing .pl-hit:hover .bigplay{opacity:1}
+.pl-hit .bigplay .i-pause{display:none}
+.player.playing .pl-hit .bigplay .i-pause{display:block}
+.player.playing .pl-hit .bigplay .i-play{display:none}
+.pl-bar{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:22px 12px 8px;background:linear-gradient(transparent,rgba(0,0,0,.75));display:flex;flex-direction:column;gap:6px}
+.pl-prog{position:relative;height:16px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.pl-prog::before{content:"";position:absolute;left:0;right:0;height:3px;border-radius:2px;background:rgba(255,255,255,.3);transition:height .12s}
+.pl-prog .fill{position:absolute;left:0;height:3px;width:0;border-radius:2px;background:var(--red);transition:height .12s}
+.pl-prog .knob{position:absolute;left:0;width:12px;height:12px;border-radius:50%;background:var(--red);transform:translateX(-50%) scale(0);transition:transform .12s}
+.pl-prog:hover::before,.pl-prog:hover .fill{height:5px}
+.pl-prog:hover .knob{transform:translateX(-50%) scale(1)}
+.pl-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.9);gap:8px}
+.pl-meta .src{opacity:.8}
+.pl-empty{position:absolute;left:0;right:0;bottom:44px;z-index:3;text-align:center;font-size:13px;color:rgba(255,255,255,.85);padding:0 16px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.pl-ph{position:absolute;inset:0;z-index:2;display:grid;place-items:center;text-align:center;padding:24px;color:rgba(255,255,255,.8);font-size:14px}
+.pl-ph svg{width:44px;height:44px;fill:rgba(255,255,255,.5);margin:0 auto 8px}
+.meta{margin-top:12px}
+.meta h3{font-size:20px;line-height:1.4;font-weight:700;word-break:break-word}
+.meta h3.ph{color:var(--text-2);font-weight:500}
+.chan{display:flex;align-items:center;gap:12px;margin-top:10px}
+.chan .nm{min-width:0;flex:1}
+.chan .nm b{display:block;font-weight:600;word-break:break-word}
+.chan .nm small{color:var(--text-2);font-size:12.5px}
+.desc{margin-top:12px;padding:12px;border-radius:12px;background:var(--surface-2);font-size:14px;white-space:pre-wrap;word-break:break-word}
+.desc .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pv-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cands{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.cands h3{font-size:13.5px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cands h3 small{font-weight:400;color:var(--text-2)}
+.cand{display:flex;align-items:center;gap:12px;padding:6px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.cand:hover{background:var(--chip)}
+.cand[aria-checked="true"]{background:var(--surface-2);border-color:var(--line-strong)}
+.cand .art{width:48px;height:48px;border-radius:6px;object-fit:cover;background:var(--chip);flex:none}
+.cand .nm{min-width:0;flex:1}
+.cand .nm b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand .nm small{display:block;color:var(--text-2);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand .pbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--chip);display:grid;place-items:center;flex:none}
+.cand .pbtn:hover{background:var(--chip-h)}
+.cand .pbtn svg.ic{width:20px;height:20px}
+.cand .sel{font-size:12px;color:var(--good);display:flex;align-items:center;gap:2px;white-space:nowrap}
+.skel{height:48px;border-radius:10px;background:linear-gradient(90deg,var(--skel-a),var(--skel-b),var(--skel-a));background-size:200% 100%;animation:shim 1.2s linear infinite;margin-bottom:6px}
+@keyframes shim{to{background-position:-200% 0}}
+
+/* ============================== Watch view ============================== */
+.watch{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+.watch .player{border-radius:12px}
+.watch h1{font-size:22px;line-height:1.4;margin-top:12px;font-weight:700;word-break:break-word}
+.w-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.w-row .nm{min-width:0;flex:1}
+.w-row .nm b{display:block;font-weight:600}
+.w-row .nm small{color:var(--text-2)}
+.upnext h2{font-size:16px;margin-bottom:12px}
+.un{display:flex;gap:8px;margin-bottom:12px;border-radius:10px}
+.un .thumb{width:168px;flex:none;border-radius:8px}
+.un .t{min-width:0}
+.un .t b{font-weight:600;font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.un .t small{display:block;color:var(--text-2);font-size:12.5px;line-height:1.5}
+.un:hover .thumb{border-radius:0}
+.un.cur .t b::before{content:"▶ ";color:var(--red);font-size:11px}
+
+/* ============================== Dashboard ============================== */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.tile.hero-t{grid-column:span 2}
+.tile .l{font-size:13px;color:var(--text-2)}
+.tile .v{font-size:32px;font-weight:600;line-height:1.2;margin-top:6px;letter-spacing:-.01em}
+.tile .v small{font-size:14px;font-weight:400;color:var(--text-2);margin-left:6px;letter-spacing:0}
+.tile.hero-t .v{font-size:56px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.tile .delta{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:12.5px;color:var(--good);font-weight:500}
+.tile .delta.flat{color:var(--text-2)}
+.meter{margin-top:14px;height:10px;border-radius:5px;background:var(--track);overflow:hidden;display:flex}
+.meter i{display:block;height:100%;background:var(--series);border-radius:5px 0 0 5px;transition:width .6s var(--ease)}
+.meter-cap{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2);margin-top:6px}
+.dgrid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.c-6{grid-column:span 6}.c-8{grid-column:span 8}.c-4{grid-column:span 4}.c-12{grid-column:span 12}
+.ch-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px}
+.ch-h .tgl{width:32px;height:32px;border-radius:8px;border:0;background:transparent;display:grid;place-items:center;color:var(--text-2);flex:none}
+.ch-h .tgl:hover{background:var(--chip)}
+.ch-h .tgl[aria-pressed="true"]{background:var(--chip);color:var(--text)}
+.ch-h .tgl svg.ic{width:20px;height:20px}
+.chart-body{transition:opacity .2s}
+.loading .chart-body,.loading .kpis{opacity:.55}
+.bars{display:flex;flex-direction:column;gap:2px}
+.brow{display:grid;grid-template-columns:minmax(80px,38%) minmax(0,1fr);align-items:center;gap:10px;padding:4px 6px;margin:0 -6px;border-radius:8px;outline-offset:0}
+.brow:hover,.brow:focus-visible{background:var(--chip)}
+.brow .nm{font-size:13.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .area{position:relative;height:22px}
+.brow .bar{position:absolute;left:0;top:4px;height:14px;width:calc((100% - 36px) * var(--r));min-width:2px;background:var(--series);border-radius:0 4px 4px 0;transition:width .5s var(--ease),filter .12s}
+.brow:hover .bar,.brow:focus-visible .bar{filter:brightness(1.2)}
+.brow .val{position:absolute;top:0;line-height:22px;left:calc((100% - 36px) * var(--r) + 8px);font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.more-note{font-size:12.5px;color:var(--text-2);margin-top:8px}
+table.tv{width:100%;border-collapse:collapse;font-size:13.5px}
+table.tv th,table.tv td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+table.tv th{color:var(--text-2);font-weight:500;font-size:12.5px}
+table.tv td.n,table.tv th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tv-wrap{max-height:300px;overflow:auto}
+.linechart{position:relative}
+.linechart svg{display:block;width:100%;height:auto;touch-action:pan-y;outline:0}
+.linechart svg:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:6px}
+.linechart text{fill:var(--muted);font-size:11.5px;font-family:var(--font)}
+.linechart .grid{stroke:var(--grid);stroke-width:1}
+.linechart .axis{stroke:var(--axis);stroke-width:1}
+.linechart .line{fill:none;stroke:var(--series);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.linechart .area{fill:var(--area)}
+.linechart .cross{stroke:var(--text-2);stroke-width:1}
+.linechart .dot{fill:var(--series);stroke:var(--surface);stroke-width:2}
+.linechart .endlbl{fill:var(--text);font-weight:600;font-size:12.5px}
+.linechart .ref{stroke:var(--line-strong);stroke-width:1}
+.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.rank li{display:flex;align-items:center;gap:12px;padding:6px;border-radius:10px}
+.rank li:hover{background:var(--chip)}
+.rank .no{width:20px;text-align:center;color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+.rank .art{width:44px;height:44px;border-radius:6px;flex:none;position:relative;overflow:hidden;background:linear-gradient(135deg,hsl(var(--h,0) 55% 30%),hsl(calc(var(--h,0) + 50) 55% 14%));display:grid;place-items:center;color:rgba(255,255,255,.6)}
+.rank .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rank .art svg{width:20px;height:20px}
+.rank .tx{min-width:0;flex:1}
+.rank .tx b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank .tx small{display:block;color:var(--text-2);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank .ct{font-size:12.5px;color:var(--text);background:var(--chip);border-radius:12px;padding:2px 10px;white-space:nowrap}
+.pend-list{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto}
+.pend-list .tag{height:26px;font-size:12.5px}
+.tip{position:fixed;z-index:200;pointer-events:none;background:var(--tip-bg);color:var(--tip-fg);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 6px 20px rgba(0,0,0,.35);max-width:280px;opacity:0;transition:opacity .1s}
+.tip.on{opacity:1}
+.tip .tv{font-size:15px;font-weight:700;display:block}
+.tip .tk{opacity:.85;display:block}
+.tip .key{display:inline-block;width:12px;height:2px;background:var(--red);vertical-align:middle;margin-right:6px}
+
+/* ============================== Dialog / toast ============================== */
+dialog{border:0;border-radius:16px;padding:0;background:var(--surface-2);color:var(--text);width:min(520px,calc(100vw - 24px));box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:calc(100vh - 32px)}
+dialog::backdrop{background:var(--scrim)}
+.dlg{padding:20px 22px 18px}
+.dlg h2{font-size:20px;line-height:1.4;margin-bottom:4px}
+.dlg p.s{color:var(--text-2)}
+.dlg .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap}
+.dlg .success-card{margin:14px 0 0}
+.toasts{position:fixed;left:16px;bottom:16px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;background:var(--tip-bg);color:var(--tip-fg);padding:12px 16px;border-radius:8px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.4);animation:toastin .25s var(--ease);max-width:min(420px,calc(100vw - 32px))}
+.toast.err{background:#b3261e;color:#fff}
+@keyframes toastin{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.spin-s{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:rot .7s linear infinite;display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ============================== Mobile bottom nav ============================== */
+.bnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:55;background:var(--bg);border-top:1px solid var(--line);height:56px;padding-bottom:env(safe-area-inset-bottom,0)}
+.bnav button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10.5px;color:var(--text)}
+.bnav button svg.ic{width:24px;height:24px}
+.bnav button[aria-current="page"]{font-weight:700;color:var(--text)}
+.bnav button:not([aria-current="page"]){color:var(--text-2)}
+
+/* ============================== Responsive ============================== */
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tile.hero-t{grid-column:span 3}
+  .c-8,.c-4,.c-6{grid-column:span 12}
+  .watch{grid-template-columns:1fr}
+  .submit-grid{grid-template-columns:1fr;grid-template-areas:"a" "p" "b"}
+  .sg-p{position:static}
+}
+@media (min-width:1181px) and (max-width:1400px){
+  .c-4{grid-column:span 6}
+  .c-8{grid-column:span 12}
+}
+@media (max-width:900px){
+  .side{transform:translateX(-100%);width:var(--side-w)!important;box-shadow:0 0 40px rgba(0,0,0,.4)}
+  body.drawer .side{transform:none}
+  body.drawer .scrim{display:block}
+  body .main,body.mini .main{margin-left:0}
+  body.mini .nav-i{flex-direction:row;gap:20px;height:40px;padding:0 12px;font-size:14px}
+  .logo-tag{display:none}
+}
+@media (max-width:700px){
+  .hdr{padding:0 8px}
+  .hdr-c{position:absolute;left:8px;right:8px;top:8px;height:40px;background:var(--bg);display:none;z-index:2}
+  body.msearch .hdr-c{display:flex}
+  .mobile-search-btn{display:grid}
+  .main{padding:calc(var(--hdr-h) + 12px) 12px 80px}
+  .bnav{display:flex}
+  .hero h1{font-size:23px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tile.hero-t{grid-column:span 2}
+  .tile.hero-t .v{font-size:48px}
+  .feed{grid-template-columns:1fr;gap:20px}
+  .vcard .thumb{border-radius:0;margin:0 -12px}
+  .vcard .vinfo{padding:0}
+  .sticky-chips .sort{display:none}
+  .un .thumb{width:140px}
+  .avatar-btn{display:none}
+  .card{padding:14px}
+  .toasts{bottom:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-l">
+    <button class="iconbtn" id="btnMenu" aria-label="เปิด/ปิดเมนู" data-ic="menu"></button>
+    <a class="logo" href="#/" aria-label="NurseTunes หน้าแรก">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l15-8.5z"/></svg></span>
+      <span class="logo-word">Nurse<b>Tunes</b></span><span class="logo-tag">TH</span>
+    </a>
+  </div>
+  <div class="hdr-c">
+    <form class="search" id="searchForm" role="search" autocomplete="off">
+      <input id="searchInput" type="search" placeholder="ค้นหาชื่อเพื่อน เพลง หรือศิลปิน" aria-label="ค้นหา">
+      <button type="button" class="clear" id="searchClear" aria-label="ล้างคำค้นหา" data-ic="close"></button>
+      <button type="submit" class="go" aria-label="ค้นหา" data-ic="search"></button>
+    </form>
+  </div>
+  <div class="hdr-r">
+    <button class="iconbtn mobile-search-btn" id="btnMSearch" aria-label="ค้นหา" data-ic="search"></button>
+    <button class="iconbtn" id="btnRefresh" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล" data-ic="refresh"></button>
+    <button class="iconbtn" id="btnTheme" aria-label="สลับโหมดมืด/สว่าง" title="สลับโหมดมืด/สว่าง"></button>
+    <button class="iconbtn" id="btnSettings" aria-label="ตั้งค่าการเชื่อมต่อ" title="ตั้งค่าการเชื่อมต่อ" data-ic="settings"></button>
+    <span class="avatar-btn" aria-hidden="true">🩺</span>
+  </div>
+</header>
+
+<nav class="side" id="side" aria-label="เมนูหลัก">
+  <button class="nav-i" data-nav="submit" data-route="#/"><span data-ic="music"></span><span class="lbl">ส่งเพลงของฉัน</span></button>
+  <button class="nav-i" data-nav="dash" data-route="#/dashboard"><span data-ic="dashboard"></span><span class="lbl">แดชบอร์ด</span></button>
+  <button class="nav-i" data-nav="people" data-route="#/people"><span data-ic="people"></span><span class="lbl">เพื่อน ๆ ทั้งห้อง</span><span class="cnt" id="cntAll"></span></button>
+  <hr>
+  <div class="side-h">ทางลัด</div>
+  <button class="nav-i" data-quick="done"><span data-ic="check"></span><span class="lbl">ส่งแล้ว</span><span class="cnt" id="cntDone"></span></button>
+  <button class="nav-i" data-quick="pending"><span data-ic="clock"></span><span class="lbl">ยังไม่ส่ง</span><span class="cnt" id="cntPend"></span></button>
+  <hr>
+  <div class="side-foot">
+    <span class="mode-pill" id="modePill"><i></i><span>กำลังโหลด…</span></span>
+    <div style="margin-top:10px" id="courseFoot"></div>
+  </div>
+</nav>
+<div class="scrim" id="scrim"></div>
+
+<main class="main" id="main">
+  <div id="banner"></div>
+
+  <!-- ===================== ส่งเพลง ===================== -->
+  <section class="view" id="view-submit" hidden>
+    <div class="hero">
+      <div>
+        <h1>ตอนนี้ฟังเพลงอะไรอยู่? 🎧</h1>
+        <p>พิมพ์ชื่อเพลงและศิลปินที่ชอบหรือฟังบ่อยในช่วงนี้ แล้วดูพรีวิวตัวอย่างเพลงทางขวาก่อนกดส่ง เพื่อน ๆ ในห้องจะได้ฟังด้วยกัน</p>
+      </div>
+      <div class="course" id="courseChips"></div>
+    </div>
+    <div class="submit-grid">
+      <section class="card sg-a" aria-labelledby="s1">
+        <div class="step"><span class="n">1</span><h2 id="s1">เลือกชื่อของคุณ และพิมพ์เพลง</h2></div>
+        <div class="combo" id="combo">
+          <label class="field" style="margin-top:0" for="stuInput"><span class="l">ชื่อ-นามสกุล<span class="req" aria-hidden="true">*</span> <em>พิมพ์ชื่อ นามสกุล หรือรหัส นศ. เพื่อค้นหา</em></span></label>
+          <div class="combo-box">
+            <span data-ic="search"></span>
+            <input class="inp" id="stuInput" role="combobox" aria-expanded="false" aria-controls="stuList" aria-autocomplete="list" autocomplete="off" placeholder="เช่น กมลชนก หรือ 69114313001">
+            <button type="button" class="clr" id="stuClear" aria-label="ล้างการเลือกชื่อ" data-ic="close"></button>
+          </div>
+          <ul class="listbox" id="stuList" role="listbox" hidden></ul>
+          <div class="help err" id="errStudent" hidden></div>
+        </div>
+        <div id="pickedBox"></div>
+
+        <label class="field"><span class="l">ชื่อเพลง<span class="req" aria-hidden="true">*</span></span>
+          <input class="inp" id="fSong" maxlength="150" placeholder="พิมพ์ชื่อเพลงได้ตามใจชอบ" autocomplete="off"></label>
+        <div class="help err" id="errSong" hidden></div>
+        <label class="field"><span class="l">ชื่อศิลปิน<span class="req" aria-hidden="true">*</span></span>
+          <input class="inp" id="fArtist" maxlength="150" placeholder="เช่น ชื่อวง / ชื่อนักร้อง" autocomplete="off"></label>
+        <div class="help err" id="errArtist" hidden></div>
+        <div class="help">ไม่ต้องกังวลเรื่องตัวสะกด ระบบจะค้นหาเพลงให้เลือกยืนยันทางขวา</div>
+      </section>
+
+      <section class="card sg-p" aria-labelledby="pvh">
+        <div class="pv-h"><h2 id="pvh">พรีวิวเพลงของคุณ</h2><span class="live-dot"><i></i>อัปเดตตามที่พิมพ์</span></div>
+        <div id="pvPlayer"></div>
+        <div class="meta" id="pvMeta"></div>
+        <div class="cands" id="pvCands" aria-live="polite"></div>
+      </section>
+
+      <section class="card sg-b" aria-labelledby="s2">
+        <div class="step"><span class="n">2</span><h2 id="s2">รายละเอียดเพิ่มเติม <span style="font-weight:400;color:var(--text-2);font-size:13px">(ไม่บังคับ)</span></h2></div>
+        <div class="field" style="margin-top:0"><span class="l">แนวเพลง / อารมณ์ <em id="tagCount">เลือกได้สูงสุด 4</em></span></div>
+        <div class="help" style="margin-top:0">แนวเพลง</div>
+        <div class="tagpick" id="tagGenre" role="group" aria-label="แนวเพลง"></div>
+        <div class="help" style="margin-top:12px">อารมณ์ของเพลง</div>
+        <div class="tagpick" id="tagMood" role="group" aria-label="อารมณ์ของเพลง"></div>
+        <div class="tag-add"><input class="inp" id="tagCustom" maxlength="30" placeholder="พิมพ์แนว/อารมณ์อื่น ๆ แล้วกด Enter" aria-label="เพิ่มแนวเพลงหรืออารมณ์เอง"><button type="button" class="btn" id="tagAddBtn">เพิ่ม</button></div>
+
+        <label class="field"><span class="l">ลิงก์ YouTube ของเพลงนี้ <em>ถ้ามี จะใช้เล่นเพลงเต็มในพรีวิว</em></span>
+          <input class="inp" id="fLink" inputmode="url" maxlength="300" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off"></label>
+        <div class="help" id="linkHelp"></div>
+
+        <label class="field"><span class="l">อยากบอกเพื่อน ๆ ว่า… <em class="counter" id="noteCount">0/140</em></span>
+          <textarea id="fNote" maxlength="140" placeholder="เช่น ฟังตอนเข้าเวร / ฟังแล้วมีกำลังใจ"></textarea></label>
+
+        <div class="form-actions">
+          <button type="button" class="btn red" id="btnSave"><span data-ic="check" id="saveIc"></span><span id="saveTxt">ส่งเพลง</span></button>
+          <button type="button" class="btn" id="btnReset">ล้างฟอร์ม</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ===================== แดชบอร์ด ===================== -->
+  <section class="view" id="view-dash" hidden>
+    <div class="page-h">
+      <div><h1>แดชบอร์ดสรุปผล</h1><div class="sub" id="dashSub"></div></div>
+      <div class="acts">
+        <button class="btn sm" id="btnCopyPend"><span data-ic="copy"></span>คัดลอกรายชื่อคนที่ยังไม่ส่ง</button>
+        <button class="btn sm" id="btnCsv"><span data-ic="download"></span>ดาวน์โหลด CSV</button>
+      </div>
+    </div>
+    <div id="dashBody"></div>
+  </section>
+
+  <!-- ===================== รายบุคคล ===================== -->
+  <section class="view" id="view-people" hidden>
+    <div class="page-h">
+      <div><h1>เพลงของเพื่อน ๆ ทั้งห้อง</h1><div class="sub" id="peopleSub"></div></div>
+    </div>
+    <div class="sticky-chips" id="peopleChips"></div>
+    <div id="peopleBody"></div>
+  </section>
+
+  <!-- ===================== หน้าดูเพลงรายบุคคล ===================== -->
+  <section class="view" id="view-watch" hidden></section>
+</main>
+
+<nav class="bnav" id="bnav" aria-label="เมนูล่าง">
+  <button data-nav="submit" data-route="#/"><span data-ic="music"></span>ส่งเพลง</button>
+  <button data-nav="dash" data-route="#/dashboard"><span data-ic="dashboard"></span>แดชบอร์ด</button>
+  <button data-nav="people" data-route="#/people"><span data-ic="people"></span>รายบุคคล</button>
+</nav>
+
+<dialog id="dlgSuccess"><div class="dlg" id="dlgSuccessBody"></div></dialog>
+<dialog id="dlgSettings">
+  <div class="dlg">
+    <h2>ตั้งค่าการเชื่อมต่อ Google Sheet</h2>
+    <p class="s" id="setStatus"></p>
+    <label class="field"><span class="l">URL เว็บแอป Apps Script <em>ลงท้ายด้วย /exec</em></span>
+      <input class="inp" id="setUrl" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
+    <div class="help" id="setHelp">ใช้สำหรับทดลองในเครื่องนี้ ถ้าจะให้ทุกคนใช้ ให้นำ URL ไปใส่ที่ค่า <code>API_URL</code> ในไฟล์ index.html (ดูคู่มือ)</div>
+    <div class="form-actions" style="margin-top:14px">
+      <button class="btn" id="setTest">ทดสอบการเชื่อมต่อ</button>
+      <button class="btn" id="setSave">บันทึก</button>
+      <button class="btn ghost" id="setClear">ใช้โหมดทดลอง</button>
+    </div>
+    <div id="demoTools" hidden>
+      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+      <p class="s" style="font-size:13px">เครื่องมือโหมดทดลอง (ข้อมูลอยู่ในเบราว์เซอร์นี้เท่านั้น ไม่ได้ส่งไปที่ไหน)</p>
+      <div class="form-actions" style="margin-top:8px">
+        <button class="btn sm" id="demoFill">เติมข้อมูลตัวอย่างสมมติ</button>
+        <button class="btn sm" id="demoWipe">ล้างข้อมูลทดลอง</button>
+      </div>
+    </div>
+    <div class="acts"><button class="btn" id="setClose">ปิด</button></div>
+  </div>
+</dialog>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+ *  NurseTunes — แบบสำรวจเพลงที่ชอบ/ฟังบ่อย ของ นศ.พยาบาล
+ *  ไฟล์เดียวจบ (HTML Standalone) — ตั้งค่า API_URL ด้านล่างให้เชื่อม Google Sheet
+ * ===================================================================== */
+const CONFIG = {
+  /** วาง URL เว็บแอป Apps Script (ลงท้ายด้วย /exec) ตรงนี้ — เว้นว่าง = โหมดทดลอง (เก็บในเบราว์เซอร์) */
+  API_URL: 'https://script.google.com/macros/s/AKfycbzIoFsyAoKQQeiVG8hIjjoiwwQPWeWfiYiVcXHpjuOz09sysJSM-XKy5g1t6f1_vytQ/exec',
+  COURSE: 'พยาบาลศาสตรบัณฑิต (ป.ตรีสาขาอื่น รุ่น 1)',
+  INSTITUTION: 'วิทยาลัยพยาบาลบรมราชชนนี สุราษฎร์ธานี',
+  ITUNES_COUNTRY: 'TH',      // ร้านเพลงที่ใช้ค้นหาตัวอย่างเสียง
+  REFRESH_MS: 60000,         // รีเฟรชแดชบอร์ดอัตโนมัติ (มิลลิวินาที)
+  TIMEZONE: 'Asia/Bangkok',
+};
+/** [ลำดับที่, รหัสนักศึกษา, ชื่อ, นามสกุล] — ใช้ในโหมดทดลอง/สำรองเมื่อโหลดจาก Sheet ไม่ได้ */
+const ROSTER = [
+  [1, "69114313001", "กมลชนก", "ปาลคะเชนทร์"],
+  [2, "69114313002", "กัญญ์ณพัชญ์", "สุวรรณนิตย์"],
+  [3, "69114313003", "กิตติศักดิ์", "ยังโซ๊ะ"],
+  [4, "69114313004", "จิตเกษม", "อินทร์เนื่อง"],
+  [5, "69114313005", "ชนัญชิดา", "ณ อยุธยา"],
+  [6, "69114313006", "ชนัญชิตา", "ยุทธพรพงศ์"],
+  [7, "69114313007", "ฑุลิกา", "หนูเสือ"],
+  [8, "69114313008", "ณัฐรัตน์", "อินทวิสัย"],
+  [9, "69114313009", "ดวงกมล", "ลิ้มสกุล"],
+  [10, "69114313010", "ธันรดา", "บัวชาวเกาะ"],
+  [11, "69114313011", "บูรพา", "โมกภา"],
+  [12, "69114313012", "ประภัสสรันย์", "ยิกุสังข์"],
+  [13, "69114313013", "ปาริฉัตร", "หีตเอี้ยว"],
+  [14, "69114313014", "ปาริชาติ", "ปราชญ์นคร"],
+  [15, "69114313015", "ปารีณา", "รัตนวาร"],
+  [16, "69114313016", "ปิยะธิดา", "ลูกเด็น"],
+  [17, "69114313017", "ปิยาพัชร", "ภูมิไชยา"],
+  [18, "69114313018", "พรเกษร", "เผ่าจำรูญ"],
+  [19, "69114313019", "พัชรพล", "วงศ์เทพบุตร"],
+  [20, "69114313020", "พิมพ์นภัส", "ทุมมา"],
+  [21, "69114313021", "ฟาอีส", "สาลี"],
+  [22, "69114313022", "ภัณฑิลา", "สุวรรณอักษร"],
+  [23, "69114313023", "ภัทรปรินทร์", "บัวพรหม"],
+  [24, "69114313024", "ภูมิภูมินทร์", "ธนภคินธยาน์"],
+  [25, "69114313025", "ยูรีดา", "เนื้ออ่อน"],
+  [26, "69114313026", "รวินันท์", "ชัยพล"],
+  [27, "69114313027", "รัชธารา", "ชนะวรรณ"],
+  [28, "69114313028", "รัญชนา", "นาเลื่อน"],
+  [29, "69114313029", "ฤทัยรัตน์", "พูลเปี่ยม"],
+  [30, "69114313030", "วรวรรธน์", "วิชัยดิษฐ"],
+  [31, "69114313031", "วิรัลยุพา", "รัตน์นราทร"],
+  [32, "69114313032", "ศรุตา", "ศุภรัชดาพันธุ์"],
+  [33, "69114313033", "ศิรประภา", "แซ่ตัน"],
+  [34, "69114313034", "ศิรวิทย์", "ธรรมทอง"],
+  [35, "69114313035", "สรสิชา", "อินทชาติ"],
+  [36, "69114313036", "สิริมา", "โพธิ์ทักษิณ"],
+  [37, "69114313037", "สุนันทา", "อินทสระ"],
+  [38, "69114313038", "สุนิสา", "อาดาม"],
+  [39, "69114313039", "เสาวลักษณ์", "ศรลอย"],
+  [40, "69114313040", "เสาวลักษณ์", "แสวงบุญ"],
+  [41, "69114313041", "หทัยชนก", "รักณรงค์"],
+  [42, "69114313042", "หนึ่งบุรุษ", "วังฉาย"],
+  [43, "69114313043", "อณิฐา", "มานะ"],
+  [44, "69114313044", "อนงทิพย์", "สงขำ"],
+  [45, "69114313045", "อโนชา", "สังวริ"],
+  [46, "69114313046", "อภิชญา", "ดำมุณี"],
+  [47, "69114313047", "อรวรา", "พลละคร"],
+  [48, "69114313048", "อัคพงษ์", "ปล้องชู"],
+  [49, "69114313049", "อัญติยา", "โคแหละ"],
+  [50, "69114313050", "ฮัยฟัฒน์", "มามะ"],
+  [51, "69114313051", "ยุวธิดา", "ชูสินธ์"]
+];
+
+/* ----------------------------- icons ----------------------------- */
+const NS = 'http://www.w3.org/2000/svg';
+const ICONS = {
+  menu: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
+  search: 'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+  close: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+  play: 'M8 5v14l11-7z',
+  pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z',
+  music: 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
+  dashboard: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z',
+  people: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
+  check: 'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z',
+  checkc: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+  clock: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
+  settings: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
+  refresh: 'M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z',
+  moon: 'M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z',
+  sun: 'M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z',
+  download: 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
+  copy: 'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
+  open: 'M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
+  table: 'M10 10.02h5V21h-5zM17 21h3c1.1 0 2-.9 2-2v-9h-5v11zm3-18H5c-1.1 0-2 .9-2 2v3h19V5c0-1.1-.9-2-2-2zM3 19c0 1.1.9 2 2 2h3V10H3v9z',
+  chart: 'M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z',
+  back: 'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
+  fire: 'M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z',
+  next: 'M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z',
+  up: 'M7 14l5-5 5 5z',
+};
+function icon(name, cls) {
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', '0 0 24 24');
+  s.setAttribute('class', 'ic' + (cls ? ' ' + cls : ''));
+  s.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', ICONS[name] || '');
+  s.append(p);
+  return s;
+}
+function hydrate(root) {
+  (root || document).querySelectorAll('[data-ic]').forEach((el) => {
+    if (el.dataset.hy === '1') return;
+    el.dataset.hy = '1';
+    el.prepend(icon(el.dataset.ic));
+  });
+}
+function setIcon(el, name) { el.replaceChildren(icon(name)); }
+
+/* ----------------------------- tiny DOM helpers ----------------------------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const k of Object.keys(props)) {
+    const v = props[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'style' && typeof v === 'object') { for (const sk of Object.keys(v)) { if (sk.startsWith('--')) e.style.setProperty(sk, v[sk]); else e.style[sk] = v[sk]; } }
+    else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
+    else e.setAttribute(k, v === true ? '' : String(v));
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+}
+function svgEl(tag, attrs, ...kids) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k of Object.keys(attrs)) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  for (const c of kids.flat()) if (c != null) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+}
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (_) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (_) { /* ignore */ } },
+  del(k) { try { localStorage.removeItem(k); } catch (_) { /* ignore */ } },
+};
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+
+/* ----------------------------- text / data utils ----------------------------- */
+const norm = (s) => String(s || '').toLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu, '');
+function hueOf(str) { let x = 0; const s = String(str || ''); for (let i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x % 360; }
+function initial(name) {
+  const n = String(name || '').trim().replace(/^[เแโใไ]+/, '');
+  const m = n.match(/\p{L}/u);
+  return m ? m[0].toUpperCase() : '?';
+}
+function splitTags(s) { return String(s || '').split(/[,，、;\n]+/).map((x) => x.trim()).filter(Boolean); }
+function mmss(t) { t = Math.max(0, Math.floor(t || 0)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); }
+
+const TZ = CONFIG.TIMEZONE;
+const fmtFull = new Intl.DateTimeFormat('th-TH', { timeZone: TZ, day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const fmtDay = new Intl.DateTimeFormat('th-TH', { timeZone: TZ, day: 'numeric', month: 'short' });
+const fmtHour = new Intl.DateTimeFormat('th-TH', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+const fmtYMD = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+function relTime(d) {
+  if (!d) return '';
+  const s = (Date.now() - d.getTime()) / 1000;
+  if (s < 45) return 'เมื่อสักครู่';
+  if (s < 3600) return Math.round(s / 60) + ' นาทีที่แล้ว';
+  if (s < 86400) return Math.round(s / 3600) + ' ชั่วโมงที่แล้ว';
+  if (fmtYMD.format(new Date(Date.now() - 86400000)) === fmtYMD.format(d)) return 'เมื่อวาน';
+  if (s < 86400 * 7) return Math.floor(s / 86400) + ' วันที่แล้ว';
+  return fmtDay.format(d);
+}
+
+/* ----------------------------- URL helpers ----------------------------- */
+function ytId(url) {
+  try {
+    const u = new URL(String(url || '').trim());
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
+    const host = u.hostname.replace(/^(www\.|m\.|music\.)/, '');
+    let id = null;
+    if (host === 'youtu.be') id = u.pathname.split('/')[1];
+    else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+      if (u.pathname === '/watch') id = u.searchParams.get('v');
+      else { const m = u.pathname.match(/^\/(embed|shorts|live|v)\/([\w-]{11})/); if (m) id = m[2]; }
+    }
+    return id && /^[\w-]{11}$/.test(id) ? id : null;
+  } catch (_) { return null; }
+}
+function safeMedia(u) {
+  if (!u) return '';
+  try {
+    const x = new URL(u);
+    if (x.protocol !== 'https:') return '';
+    if (/(^|\.)(mzstatic\.com|apple\.com|ytimg\.com)$/i.test(x.hostname)) return x.href;
+  } catch (_) { /* ignore */ }
+  return '';
+}
+const ytWatch = (id) => 'https://www.youtube.com/watch?v=' + id;
+const ytSearch = (q) => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+
+/** ภาษาของชื่อเพลง ดูจากตัวอักษรที่ใช้ */
+function detectLang(s) {
+  const count = (text) => {
+    const c = { th: 0, en: 0, ko: 0, ja: 0, zh: 0 };
+    for (const ch of String(text || '')) {
+      const cp = ch.codePointAt(0);
+      if (cp >= 0x0e01 && cp <= 0x0e5b) c.th++;
+      else if ((cp >= 0x41 && cp <= 0x5a) || (cp >= 0x61 && cp <= 0x7a) || (cp >= 0xc0 && cp <= 0x24f)) c.en++;
+      else if ((cp >= 0xac00 && cp <= 0xd7af) || (cp >= 0x1100 && cp <= 0x11ff)) c.ko++;
+      else if (cp >= 0x3040 && cp <= 0x30ff) c.ja++;
+      else if (cp >= 0x4e00 && cp <= 0x9fff) c.zh++;
+    }
+    return c;
+  };
+  let c = count(s.song);
+  if (!(c.th + c.en + c.ko + c.ja + c.zh)) c = count(s.artist);
+  if (c.ja) return 'ญี่ปุ่น';
+  const order = [['th', 'ไทย'], ['en', 'อังกฤษ'], ['ko', 'เกาหลี'], ['zh', 'จีน']];
+  let best = null;
+  for (const [k, label] of order) if (c[k] > 0 && (!best || c[k] > c[best[0]])) best = [k, label];
+  return best ? best[1] : 'อื่น ๆ';
+}
+
+/* ----------------------------- state ----------------------------- */
+const S = {
+  students: [], updatedAt: null, loading: false, error: null, offline: false,
+  view: 'submit', watchId: null,
+  q: '', status: 'all', tag: null, sort: 'recent',
+};
+const API_RE = /^https:\/\/script\.google\.com\/(macros\/s\/[\w-]+|a\/(macros\/)?[\w.-]+\/(macros\/)?s\/[\w-]+)\/exec$/;
+const ERR_TH = {
+  student_not_found: 'ไม่พบรายชื่อนี้ในระบบ',
+  missing_song: 'กรุณากรอกชื่อเพลง',
+  missing_artist: 'กรุณากรอกชื่อศิลปิน',
+  missing_student: 'กรุณาเลือกชื่อของคุณก่อน',
+  busy: 'ระบบกำลังยุ่งอยู่ ลองกดส่งอีกครั้งใน 2-3 วินาที',
+  already_submitted: 'บัญชีนี้ส่งเพลงไปแล้ว และระบบปิดการแก้ไข',
+  unknown_action: 'เวอร์ชัน Apps Script ไม่ตรงกับหน้าเว็บ — ให้ Deploy เวอร์ชันใหม่',
+};
+function errTh(e) {
+  if (e && e.code && ERR_TH[e.code]) return ERR_TH[e.code];
+  if (e && e.name === 'AbortError') return 'เชื่อมต่อนานเกินไป ลองใหม่อีกครั้ง';
+  if (e instanceof TypeError) return 'เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ต, URL ต้องลงท้าย /exec และ Deploy ต้องตั้งสิทธิ์เป็น “ทุกคน (Anyone)”';
+  return (e && e.message) ? 'ไม่สำเร็จ: ' + e.message : 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง';
+}
+
+function mkStudent(r) {
+  const t = r.time ? new Date(r.time) : null;
+  const s = {
+    no: Number(r.no) || 0, id: String(r.id), first: r.first || '', last: r.last || '',
+    name: (r.name || `${r.first || ''} ${r.last || ''}`).trim(),
+    song: String(r.song || '').trim(), artist: String(r.artist || '').trim(),
+    genre: String(r.genre || '').trim(), link: String(r.link || '').trim(), note: String(r.note || '').trim(),
+    art: safeMedia(r.art), preview: safeMedia(r.preview), trackId: String(r.trackId || ''),
+    time: t && !isNaN(t) ? t : null,
+  };
+  s.done = !!(s.song && s.artist);
+  s.yt = ytId(s.link);
+  s.tags = splitTags(s.genre);
+  s.hue = hueOf(s.id);
+  return s;
+}
+function coverOf(s) {
+  if (s.art) return { url: s.art, kind: 'square' };
+  if (s.yt) return { url: `https://i.ytimg.com/vi/${s.yt}/hqdefault.jpg`, kind: 'cover' };
+  return { url: '', kind: '' };
+}
+const openUrl = (s) => (s.yt ? ytWatch(s.yt) : ytSearch(`${s.song} ${s.artist}`));
+const byId = (id) => S.students.find((x) => x.id === id);
+
+/* ----------------------------- API (Google Apps Script) ----------------------------- */
+const API = {
+  url() {
+    const o = LS.get('nursetunes.api', '');
+    return o && API_RE.test(o) ? o : String(CONFIG.API_URL || '').trim();
+  },
+  live() { return !!this.url(); },
+  async req(url, opts) {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 25000);
+    try {
+      const r = await fetch(url, Object.assign({ signal: ctl.signal, redirect: 'follow' }, opts || {}));
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const txt = await r.text();
+      let j;
+      try { j = JSON.parse(txt); } catch (_) { throw new Error('ตอบกลับไม่ใช่ JSON — ตรวจว่า Deploy เป็น "ทุกคน (Anyone)" และใช้ URL ที่ลงท้าย /exec'); }
+      if (!j.ok) { const e = new Error(j.error || 'error'); e.code = j.error; throw e; }
+      return j;
+    } finally { clearTimeout(t); }
+  },
+  withQuery(u, q) { return u + (u.includes('?') ? '&' : '?') + q; },
+  list() { return this.req(this.withQuery(this.url(), 'action=list&_=' + Date.now())); },
+  ping(u) { return this.req(this.withQuery(u, 'action=ping&_=' + Date.now())); },
+  save(payload) {
+    return this.req(this.url(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action: 'save' }, payload)) });
+  },
+};
+
+/* ----------------------------- demo store (localStorage) ----------------------------- */
+const DEMO_KEY = 'nursetunes.demo.v1';
+function demoLoad() { try { return JSON.parse(LS.get(DEMO_KEY, '{}')) || {}; } catch (_) { return {}; } }
+function demoStudents() {
+  const store = demoLoad();
+  return ROSTER.map((r) => mkStudent(Object.assign({ no: r[0], id: r[1], first: r[2], last: r[3] }, store[r[1]] || {})));
+}
+function demoSave(p) {
+  const store = demoLoad();
+  const link = ytId(p.link) ? p.link : ytSearch(`${p.song} ${p.artist}`);
+  store[p.studentId] = { song: p.song, artist: p.artist, genre: p.genre, link, note: p.note, art: p.art, preview: p.preview, trackId: p.trackId, time: new Date().toISOString() };
+  LS.set(DEMO_KEY, JSON.stringify(store));
+  const r = ROSTER.find((x) => x[1] === p.studentId);
+  return mkStudent(Object.assign({ no: r[0], id: r[1], first: r[2], last: r[3] }, store[p.studentId]));
+}
+function demoFill() {
+  const SAMPLES = [
+    ['Flowers', 'Miley Cyrus', 'ป๊อป, ให้กำลังใจ'], ['Blinding Lights', 'The Weeknd', 'ป๊อป, ปลุกพลัง'], ['Perfect', 'Ed Sheeran', 'โรแมนติก'],
+    ['Hype Boy', 'NewJeans', 'K-Pop, สนุก/ปาร์ตี้'], ['Ditto', 'NewJeans', 'K-Pop, ชิล ๆ'], ['봄날', 'BTS', 'K-Pop, เศร้า/อกหัก'],
+    ['Yellow', 'Coldplay', 'ร็อก, ชิล ๆ'], ['Counting Stars', 'OneRepublic', 'ป๊อป'], ['Believer', 'Imagine Dragons', 'ร็อก, ปลุกพลัง'],
+    ['Pink Venom', 'BLACKPINK', 'K-Pop, สนุก/ปาร์ตี้'], ['夜に駆ける', 'YOASOBI', 'J-Pop, ปลุกพลัง'], ['Die With A Smile', 'Lady Gaga & Bruno Mars', 'บัลลาด, โรแมนติก'],
+    ['คืนนี้ดาวเยอะ', 'วงตัวอย่าง', 'สตริงไทย, ชิล ๆ'], ['เพลงของคนเข้าเวร', 'ศิลปินสมมติ', 'สตริงไทย, ให้กำลังใจ'], ['ทางกลับบ้าน', 'วงตัวอย่าง', 'อินดี้, เศร้า/อกหัก'],
+    ['ลูกทุ่งชีวิตดี', 'ศิลปินสมมติ', 'ลูกทุ่ง/หมอลำ, สนุก/ปาร์ตี้'], ['Espresso', 'Sabrina Carpenter', 'ป๊อป, สนุก/ปาร์ตี้'],
+  ];
+  let seed = 20260101;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const store = {};
+  const pool = ROSTER.map((r) => r[1]).sort(() => rnd() - 0.5).slice(0, 36);
+  pool.forEach((id) => {
+    const wSample = SAMPLES[Math.floor(Math.pow(rnd(), 1.6) * SAMPLES.length)];
+    store[id] = {
+      song: wSample[0], artist: wSample[1], genre: wSample[2], note: rnd() > 0.55 ? 'ตัวอย่างข้อความ (ข้อมูลสมมติ)' : '',
+      link: ytSearch(`${wSample[0]} ${wSample[1]}`), art: '', preview: '', trackId: '',
+      time: new Date(Date.now() - rnd() * 74 * 3600 * 1000).toISOString(),
+    };
+  });
+  LS.set(DEMO_KEY, JSON.stringify(store));
+}
+
+/* ----------------------------- toast / tooltip / clipboard ----------------------------- */
+function toast(msg, kind) {
+  const t = h('div', { class: 'toast' + (kind === 'err' ? ' err' : ''), role: kind === 'err' ? 'alert' : 'status' }, msg);
+  $('#toasts').append(t);
+  setTimeout(() => { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, kind === 'err' ? 5200 : 3200);
+}
+const Tip = {
+  el: null,
+  show(x, y, value, label, opts) {
+    const el = this.el || (this.el = $('#tip'));
+    el.replaceChildren();
+    if (value != null) el.append(h('span', { class: 'tv' }, value));
+    if (label) el.append(h('span', { class: 'tk' }, opts && opts.key ? h('i', { class: 'key' }) : null, label));
+    if (opts && opts.extra) el.append(h('span', { class: 'tk' }, opts.extra));
+    el.classList.add('on');
+    const r = el.getBoundingClientRect();
+    let left = x + 14, top = y - r.height - 12;
+    if (left + r.width > innerWidth - 8) left = x - r.width - 14;
+    if (top < 8) top = y + 18;
+    el.style.left = Math.max(8, left) + 'px';
+    el.style.top = Math.max(8, top) + 'px';
+  },
+  hide() { (this.el || (this.el = $('#tip'))).classList.remove('on'); },
+};
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (_) {
+    const ta = h('textarea', { style: { position: 'fixed', opacity: '0' } }); ta.value = text; document.body.append(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_e) { /* ignore */ }
+    ta.remove(); return ok;
+  }
+}
+
+/* ===================== เสียงตัวอย่าง (เล่นทีละเพลงเท่านั้น) ===================== */
+const Sound = (() => {
+  const a = new Audio();
+  a.preload = 'none';
+  let cur = null; // { url, L }
+  a.addEventListener('timeupdate', () => { if (cur && cur.L.time) cur.L.time(a.currentTime, a.duration || 30); });
+  a.addEventListener('playing', () => { if (cur && cur.L.play) cur.L.play(); });
+  a.addEventListener('pause', () => { if (cur && !a.ended && cur.L.pause) cur.L.pause(); });
+  a.addEventListener('ended', () => { const c = cur; cur = null; if (c && c.L.stop) c.L.stop(); });
+  a.addEventListener('error', () => { const c = cur; cur = null; if (c && c.L.error) c.L.error(); });
+  return {
+    toggle(url, L) {
+      if (cur && cur.L === L) { if (a.paused) a.play().catch(() => {}); else a.pause(); return; }
+      this.stop();
+      cur = { url, L };
+      a.src = url;
+      if (L.loading) L.loading();
+      a.play().catch(() => { if (cur && cur.L === L) { cur = null; if (L.error) L.error(); } });
+    },
+    stop() { if (cur) { const c = cur; cur = null; a.pause(); if (c.L.stop) c.L.stop(); } },
+    seek(L, ratio) { if (cur && cur.L === L && isFinite(a.duration)) a.currentTime = clamp(ratio, 0, 1) * a.duration; },
+    isCur(L) { return !!cur && cur.L === L; },
+  };
+})();
+
+/* ===================== ค้นหาตัวอย่างเพลง (iTunes Search API — ไม่ต้องใช้คีย์) ===================== */
+const itCache = new Map();
+function jsonp(url, ms) {
+  return new Promise((resolve, reject) => {
+    const cb = '__it' + Math.random().toString(36).slice(2);
+    const s = document.createElement('script');
+    const t = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, ms || 8000);
+    function cleanup() { clearTimeout(t); delete window[cb]; s.remove(); }
+    window[cb] = (d) => { cleanup(); resolve((d && d.results) || []); };
+    s.onerror = () => { cleanup(); reject(new Error('network')); };
+    s.src = url + '&callback=' + cb;
+    document.head.append(s);
+  });
+}
+async function itFetch(url, signal) {
+  try {
+    const r = await fetch(url, { signal });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return (await r.json()).results || [];
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw e;
+    return jsonp(url); // เผื่อบางเครือข่ายบล็อก fetch ข้ามโดเมน
+  }
+}
+async function itunesSearch(term, signal) {
+  const key = term.toLowerCase();
+  if (itCache.has(key)) return itCache.get(key);
+  const q = (country) => `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=8${country ? '&country=' + country : ''}`;
+  let res = await itFetch(q(CONFIG.ITUNES_COUNTRY), signal);
+  if (!res.length) res = await itFetch(q(''), signal);
+  const out = res.filter((x) => x.trackId && x.trackName).map((x) => ({
+    trackId: String(x.trackId),
+    title: x.trackName,
+    artist: x.artistName || '',
+    album: x.collectionName || '',
+    art: safeMedia(String(x.artworkUrl100 || '').replace(/\/\d+x\d+(bb)?\.(jpg|png)$/i, '/600x600bb.jpg')),
+    preview: safeMedia(x.previewUrl || ''),
+    genre: x.primaryGenreName || '',
+  }));
+  itCache.set(key, out);
+  return out;
+}
+/** เลือกผลที่ตรงกับที่พิมพ์มากที่สุด (ชื่อเพลง + ศิลปิน) */
+function pickBest(results, song, artist) {
+  const ns = norm(song), na = norm(artist);
+  let best = null, bestScore = 0;
+  results.forEach((r, i) => {
+    const nt = norm(r.title), nr = norm(r.artist);
+    let sc = 0;
+    if (ns && nt === ns) sc += 4; else if (ns && (nt.includes(ns) || ns.includes(nt))) sc += 2;
+    if (na && nr === na) sc += 3; else if (na && (nr.includes(na) || na.includes(nr))) sc += 2;
+    if (r.preview) sc += 0.5;
+    sc -= i * 0.05;
+    if (sc > bestScore) { bestScore = sc; best = r; }
+  });
+  return bestScore >= 2 ? best : null;
+}
+
+/* ===================== Player (ใช้ทั้งหน้ากรอกและหน้าดูเพลง) ===================== */
+/** e = { title, artist, art, preview, yt, hue, hasText } */
+function buildPlayer(e) {
+  const root = h('div', { class: 'player' });
+  root.style.setProperty('--h', e.hue || 0);
+  if (e.yt) {
+    root.append(h('iframe', {
+      src: `https://www.youtube-nocookie.com/embed/${e.yt}?rel=0&modestbranding=1&playsinline=1`,
+      title: `ตัวอย่างเพลง ${e.title || ''}`, loading: 'lazy',
+      allow: 'accelerometer; encrypted-media; picture-in-picture; fullscreen', allowfullscreen: true,
+      referrerpolicy: 'strict-origin-when-cross-origin',
+    }));
+    return { node: root, destroy() {}, update() {} };
+  }
+  const bg = h('div', { class: 'pl-bg' + (e.art ? '' : ' none') });
+  if (e.art) bg.style.backgroundImage = `url("${e.art}")`;
+  const lab = h('div', { class: 'lab' });
+  if (e.art) { const im = h('img', { src: e.art, alt: '', referrerpolicy: 'no-referrer' }); im.addEventListener('error', () => { im.remove(); lab.append(icon('music')); }); lab.append(im); } else lab.append(icon('music'));
+  root.append(bg, h('div', { class: 'pl-disc' }, lab));
+
+  if (!e.preview) {
+    root.append(e.hasText
+      ? h('div', { class: 'pl-empty' }, 'ยังไม่มีตัวอย่างเสียงให้ฟังในหน้านี้ — กด “เปิดใน YouTube” เพื่อฟัง')
+      : h('div', { class: 'pl-ph' }, h('div', null, icon('music'), 'พิมพ์ชื่อเพลงเพื่อดูตัวอย่าง')));
+    return { node: root, destroy() {}, update() {} };
+  }
+  const fill = h('div', { class: 'fill' }), knob = h('div', { class: 'knob' });
+  const prog = h('div', { class: 'pl-prog', role: 'slider', 'aria-label': 'ตำแหน่งเพลง', 'aria-valuemin': 0, 'aria-valuemax': 30, 'aria-valuenow': 0, tabindex: 0 }, fill, knob);
+  const time = h('span', null, '0:00 / 0:30');
+  const L = {
+    loading() { root.classList.add('loading'); },
+    play() { root.classList.remove('loading'); root.classList.add('playing'); },
+    pause() { root.classList.remove('playing'); },
+    stop() { root.classList.remove('playing', 'loading'); set(0); time.textContent = '0:00 / 0:30'; },
+    error() { root.classList.remove('playing', 'loading'); toast('เล่นตัวอย่างเสียงไม่ได้ ลองกดอีกครั้ง หรือเปิดใน YouTube', 'err'); },
+    time(t, d) { set(t / d); time.textContent = `${mmss(t)} / ${mmss(d)}`; prog.setAttribute('aria-valuenow', Math.round(t)); },
+  };
+  function set(r) { const p = clamp(r, 0, 1) * 100; fill.style.width = p + '%'; knob.style.left = p + '%'; }
+  const hit = h('button', { class: 'pl-hit', type: 'button', 'aria-label': 'เล่น / หยุดตัวอย่างเพลง', onclick: () => Sound.toggle(e.preview, L) },
+    h('span', { class: 'bigplay' }, svgIcon('play', 'i-play'), svgIcon('pause', 'i-pause')));
+  const seekFrom = (ev) => { const r = prog.getBoundingClientRect(); Sound.seek(L, (ev.clientX - r.left) / r.width); };
+  let dragging = false;
+  prog.addEventListener('pointerdown', (ev) => { dragging = true; prog.setPointerCapture(ev.pointerId); seekFrom(ev); });
+  prog.addEventListener('pointermove', (ev) => { if (dragging) seekFrom(ev); });
+  prog.addEventListener('pointerup', () => { dragging = false; });
+  root.append(hit, h('div', { class: 'pl-bar' }, prog, h('div', { class: 'pl-meta' }, time, h('span', { class: 'src' }, 'ตัวอย่าง 30 วินาที · iTunes'))));
+  return { node: root, destroy() { if (Sound.isCur(L)) Sound.stop(); }, update() {} };
+}
+function svgIcon(name, cls) { const s = icon(name); s.setAttribute('class', cls || ''); return s; }
+
+/* ===================== หน้า "ส่งเพลงของฉัน" ===================== */
+const GENRES = ['ป๊อป', 'สตริงไทย', 'ฮิปฮอป/แร็พ', 'R&B', 'ร็อก', 'อินดี้', 'ลูกทุ่ง/หมอลำ', 'K-Pop', 'J-Pop', 'บัลลาด', 'EDM/แดนซ์', 'แจ๊ส/ชิล', 'เพลงเก่า/ลูกกรุง', 'โฟล์ก/คันทรี'];
+const MOODS = ['ให้กำลังใจ', 'ชิล ๆ', 'เศร้า/อกหัก', 'สนุก/ปาร์ตี้', 'โรแมนติก', 'ปลุกพลัง', 'ผ่อนคลาย/หลับ'];
+const MAX_TAGS = 4;
+
+const P = {
+  student: null, tags: [], match: null, cands: [], status: 'idle', locked: false,
+  seq: 0, ctl: null, saving: false, comboIdx: -1, comboOpen: false, comboItems: [], prefilledFor: null, prefilledSig: '',
+};
+let pvKey = '', pvPlayer = null;
+
+function avatar(name, hue, cls) { return h('span', { class: 'av' + (cls ? ' ' + cls : ''), style: { '--h': hue } }, initial(name)); }
+const f = { get song() { return $('#fSong').value.trim(); }, get artist() { return $('#fArtist').value.trim(); }, get link() { return $('#fLink').value.trim(); }, get note() { return $('#fNote').value.trim(); } };
+
+/* ----------------------------- combobox เลือกชื่อ ----------------------------- */
+function comboFilter(q) {
+  const raw = q.trim();
+  const nq = norm(raw);
+  if (!nq) return S.students.slice(0, 80);
+  return S.students.filter((s) => norm(s.name).includes(nq) || s.id.includes(raw) || String(s.no) === raw).slice(0, 80);
+}
+function renderCombo() {
+  const ul = $('#stuList'), input = $('#stuInput');
+  ul.replaceChildren();
+  if (!S.students.length) { ul.append(h('li', { class: 'lb-empty' }, 'กำลังโหลดรายชื่อ…')); return; }
+  const q = P.student && input.value === P.student.name ? '' : input.value;
+  P.comboItems = comboFilter(q);
+  if (!P.comboItems.length) { ul.append(h('li', { class: 'lb-empty' }, 'ไม่พบชื่อที่ค้นหา ลองพิมพ์ชื่อหรือรหัส นศ. ใหม่')); return; }
+  P.comboItems.forEach((s, i) => {
+    const li = h('li', { class: 'opt', role: 'option', id: 'opt-' + i, 'aria-selected': i === P.comboIdx ? 'true' : 'false' },
+      avatar(s.name, s.hue),
+      h('div', { class: 'nm' }, h('b', null, s.name), h('small', null, `เลขที่ ${s.no} · ${s.id}`)),
+      h('span', { class: 'st' + (s.done ? ' done' : '') }, s.done ? icon('checkc') : null, s.done ? 'ส่งแล้ว' : 'ยังไม่ส่ง'));
+    li.addEventListener('mousedown', (ev) => { ev.preventDefault(); selectStudent(s); });
+    ul.append(li);
+  });
+}
+function openCombo(open) {
+  P.comboOpen = open;
+  $('#stuList').hidden = !open;
+  $('#stuInput').setAttribute('aria-expanded', String(open));
+  if (open) renderCombo();
+}
+function moveCombo(d) {
+  if (!P.comboOpen) openCombo(true);
+  const n = P.comboItems.length; if (!n) return;
+  P.comboIdx = (P.comboIdx + d + n) % n;
+  $$('#stuList .opt').forEach((li, i) => li.setAttribute('aria-selected', String(i === P.comboIdx)));
+  const el = $('#opt-' + P.comboIdx); if (el) { el.scrollIntoView({ block: 'nearest' }); $('#stuInput').setAttribute('aria-activedescendant', 'opt-' + P.comboIdx); }
+}
+const formSig = () => [f.song, f.artist, f.link, f.note, P.tags.join('|')].join('\u0001');
+function formPristine() {
+  const empty = !f.song && !f.artist && !f.link && !f.note && !P.tags.length;
+  return empty || (!!P.prefilledFor && formSig() === P.prefilledSig);
+}
+function clearFields() {
+  ['#fSong', '#fArtist', '#fLink', '#fNote'].forEach((q) => { $(q).value = ''; });
+  P.tags = []; P.match = null; P.cands = []; P.status = 'idle'; P.locked = false; P.prefilledFor = null; P.prefilledSig = '';
+  updateNoteCount(); updateLinkHelp(); renderTags();
+}
+function selectStudent(s) {
+  const pristine = formPristine();
+  P.student = s;
+  const input = $('#stuInput');
+  input.value = s ? s.name : '';
+  $('#combo').classList.toggle('has-v', !!s);
+  $('#errStudent').hidden = true; input.classList.remove('bad');
+  openCombo(false); P.comboIdx = -1;
+  if (s) {
+    LS.set('nursetunes.me', s.id);
+    if (pristine && P.prefilledFor !== s.id) { clearFields(); if (s.done) prefill(s); }
+  }
+  renderPicked(); renderPreview(); updateSaveBtn();
+}
+function renderPicked() {
+  const box = $('#pickedBox'); box.replaceChildren();
+  const s = P.student; if (!s) return;
+  box.append(h('div', { class: 'picked' }, avatar(s.name, s.hue, 'lg'),
+    h('div', { class: 'nm' }, h('b', null, s.name), h('small', null, `เลขที่ ${s.no} · รหัส ${s.id}`)),
+    h('span', { class: 'tag' }, s.done ? 'ส่งแล้ว' : 'ยังไม่ส่ง')));
+  if (s.done) {
+    box.append(h('div', { class: 'notice' },
+      'ตอนนี้บันทึกไว้: ', h('b', null, s.song), ' — ', s.artist, s.time ? ` (ส่งเมื่อ ${fmtFull.format(s.time)})` : '',
+      h('br'), (P.prefilledFor === s.id ? 'โหลดข้อมูลเดิมมาให้แก้ไขแล้ว ' : '') + 'ถ้ากดส่งอีกครั้ง เพลงใหม่จะแทนที่เพลงเดิม (ระบบเก็บประวัติไว้ใน Sheet)'));
+  }
+}
+function prefill(s) {
+  $('#fSong').value = s.song; $('#fArtist').value = s.artist;
+  $('#fLink').value = s.yt ? s.link : '';
+  $('#fNote').value = s.note; updateNoteCount(); updateLinkHelp();
+  P.tags = s.tags.slice(0, MAX_TAGS); renderTags();
+  P.match = (s.art || s.preview) ? { trackId: s.trackId, title: s.song, artist: s.artist, album: '', art: s.art, preview: s.preview, genre: '' } : null;
+  P.locked = true; P.cands = []; P.status = 'idle';
+  P.prefilledFor = s.id; P.prefilledSig = formSig();
+}
+
+/* ----------------------------- แนวเพลง / อารมณ์ ----------------------------- */
+function renderTags() {
+  const mk = (label, custom) => {
+    const on = P.tags.includes(label);
+    const b = h('button', { type: 'button', class: 'chip', 'aria-pressed': String(on), 'aria-disabled': (!on && P.tags.length >= MAX_TAGS) ? 'true' : null,
+      onclick: () => toggleTag(label) }, label, custom ? h('span', { class: 'x', 'aria-hidden': 'true' }, '×') : null);
+    return b;
+  };
+  $('#tagGenre').replaceChildren(...GENRES.map((g) => mk(g)));
+  const customs = P.tags.filter((t) => !GENRES.includes(t) && !MOODS.includes(t));
+  $('#tagMood').replaceChildren(...MOODS.map((m) => mk(m)), ...customs.map((c) => mk(c, true)));
+  $('#tagCount').textContent = `เลือกแล้ว ${P.tags.length}/${MAX_TAGS}`;
+}
+function toggleTag(label) {
+  const i = P.tags.indexOf(label);
+  if (i >= 0) P.tags.splice(i, 1);
+  else if (P.tags.length < MAX_TAGS) P.tags.push(label);
+  else return;
+  renderTags(); renderMeta(draftEntry());
+}
+function addCustomTag() {
+  const inp = $('#tagCustom'); const v = inp.value.trim().replace(/[,，;]/g, ' ');
+  if (!v) return;
+  if (P.tags.length >= MAX_TAGS) { toast(`เลือกได้สูงสุด ${MAX_TAGS} รายการ`, 'err'); return; }
+  if (!P.tags.some((t) => norm(t) === norm(v))) P.tags.push(v);
+  inp.value = ''; renderTags(); renderMeta(draftEntry());
+}
+
+/* ----------------------------- ลิงก์ YouTube / ข้อความ ----------------------------- */
+function updateLinkHelp() {
+  const v = f.link, el = $('#linkHelp');
+  el.className = 'help';
+  if (!v) { el.textContent = 'ปล่อยว่างได้ ระบบจะใช้ตัวอย่างเสียง 30 วินาทีและลิงก์ค้นหา YouTube ให้อัตโนมัติ'; return; }
+  const id = ytId(v);
+  if (id) { el.classList.add('ok'); el.textContent = '✓ พบวิดีโอ YouTube — จะใช้เล่นเพลงเต็มในพรีวิว'; }
+  else { el.classList.add('err'); el.textContent = 'ลิงก์นี้ไม่ใช่ลิงก์วิดีโอ YouTube (ตัวอย่าง https://youtu.be/xxxxxxxxxxx)'; }
+}
+function updateNoteCount() { $('#noteCount').textContent = `${$('#fNote').value.length}/140`; }
+
+/* ----------------------------- พรีวิว ----------------------------- */
+function draftEntry() {
+  const song = f.song, artist = f.artist, yt = ytId(f.link), m = P.match;
+  return {
+    title: song, artist, yt, hasText: !!(song || artist),
+    art: m && m.art ? m.art : (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : ''),
+    preview: m && m.preview ? m.preview : '',
+    hue: hueOf(song + artist), query: `${song} ${artist}`.trim(),
+  };
+}
+function renderPreview() {
+  const e = draftEntry();
+  const key = [e.yt || '', e.art, e.preview, e.hasText ? 1 : 0].join('|');
+  if (key !== pvKey || !pvPlayer) {
+    if (pvPlayer) pvPlayer.destroy();
+    pvPlayer = buildPlayer(e);
+    $('#pvPlayer').replaceChildren(pvPlayer.node);
+    pvKey = key;
+  } else pvPlayer.node.style.setProperty('--h', e.hue);
+  renderMeta(e);
+  renderCands();
+}
+function renderMeta(e) {
+  const s = P.student, box = $('#pvMeta');
+  box.replaceChildren();
+  box.append(e.title ? h('h3', null, e.title) : h('h3', { class: 'ph' }, 'ชื่อเพลงของคุณจะแสดงที่นี่'));
+  box.append(h('div', { class: 'chan' }, avatar(s ? s.name : '♪', s ? s.hue : e.hue),
+    h('div', { class: 'nm' }, h('b', null, e.artist || 'ชื่อศิลปิน'), h('small', null, s ? `ส่งโดย ${s.name}` : 'ส่งโดย (ยังไม่ได้เลือกชื่อ)'))));
+  const note = f.note;
+  if (P.tags.length || note) {
+    box.append(h('div', { class: 'desc' }, P.tags.length ? h('div', { class: 'tags' }, P.tags.map((t) => h('span', { class: 'tag' }, t))) : null, note));
+  }
+  if (e.hasText) {
+    box.append(h('div', { class: 'pv-acts' },
+      h('a', { class: 'btn sm', href: e.yt ? ytWatch(e.yt) : ytSearch(e.query), target: '_blank', rel: 'noopener noreferrer' }, icon('open'), e.yt ? 'เปิดใน YouTube' : 'ค้นหาใน YouTube')));
+  }
+}
+function renderCands() {
+  const box = $('#pvCands'); box.replaceChildren();
+  const song = f.song;
+  if (P.status === 'loading') { box.append(h('h3', null, 'กำลังค้นหาตัวอย่างเพลง…'), h('div', { class: 'skel' }), h('div', { class: 'skel' }), h('div', { class: 'skel' })); return; }
+  let list = P.cands, heading = 'เลือกเพลงที่ตรงกับที่คุณฟัง';
+  if (P.status === 'idle' && P.match && !P.cands.length) { list = [P.match]; heading = 'ตัวอย่างที่ใช้อยู่ (บันทึกไว้แล้ว)'; }
+  if (P.status === 'error') {
+    box.append(h('h3', null, 'ค้นหาตัวอย่างอัตโนมัติไม่ได้'),
+      h('p', { class: 'help' }, 'ไม่สามารถเชื่อมต่อบริการค้นหาเพลงได้ (อาจออฟไลน์) — คุณยังกดส่งเพลงได้ตามปกติ หรือวางลิงก์ YouTube ในช่อง 2'),
+      h('button', { class: 'btn sm', type: 'button', onclick: () => runSearch() }, icon('refresh'), 'ลองค้นหาอีกครั้ง'));
+    return;
+  }
+  if (P.status === 'none') {
+    box.append(h('h3', null, 'ไม่พบตัวอย่างเสียงอัตโนมัติ'),
+      h('p', { class: 'help' }, 'ลองสะกดชื่อเพลง/ศิลปินใหม่ หรือวางลิงก์ YouTube ในช่อง 2 — ถ้าไม่พบ ระบบก็ยังบันทึกเพลงที่คุณพิมพ์ได้ตามปกติ'));
+    return;
+  }
+  if (!list.length) {
+    box.append(h('p', { class: 'help' }, song.length < 2 ? 'พิมพ์ชื่อเพลงอย่างน้อย 2 ตัวอักษร ระบบจะค้นหาตัวอย่างเสียงและปกอัลบั้มให้อัตโนมัติ' : ''));
+    return;
+  }
+  box.append(h('h3', null, heading, h('small', null, 'ตัวอย่างเสียงจาก iTunes')));
+  const grp = h('div', { role: 'radiogroup', 'aria-label': heading });
+  list.forEach((c) => {
+    const on = !!(P.match && P.match.trackId === c.trackId);
+    const L = {
+      loading() { pb.replaceChildren(h('span', { class: 'spin-s', style: { borderColor: 'var(--chip-h)', borderTopColor: 'var(--text)' } })); },
+      play() { setIcon(pb, 'pause'); }, pause() { setIcon(pb, 'play'); }, stop() { setIcon(pb, 'play'); },
+      error() { setIcon(pb, 'play'); toast('เล่นตัวอย่างเสียงไม่ได้', 'err'); },
+    };
+    const pb = h('button', { class: 'pbtn', type: 'button', 'aria-label': `ฟังตัวอย่าง ${c.title}`, onclick: (ev) => { ev.stopPropagation(); if (c.preview) Sound.toggle(c.preview, L); } }, icon('play'));
+    if (!c.preview) { pb.disabled = true; pb.title = 'ไม่มีตัวอย่างเสียง'; pb.style.opacity = '.4'; }
+    const art = h('img', { class: 'art', src: c.art || '', alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
+    art.addEventListener('error', () => { art.style.visibility = 'hidden'; });
+    const row = h('div', { class: 'cand', role: 'radio', 'aria-checked': String(on), tabindex: 0,
+      onclick: () => { P.match = c; P.locked = true; renderPreview(); },
+      onkeydown: (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); P.match = c; P.locked = true; renderPreview(); } } },
+      art, h('div', { class: 'nm' }, h('b', null, c.title), h('small', null, [c.artist, c.album].filter(Boolean).join(' · '))),
+      on ? h('span', { class: 'sel' }, icon('check', 'x'), 'ใช้อยู่') : null, pb);
+    grp.append(row);
+  });
+  box.append(grp);
+  const m = P.match;
+  const acts = h('div', { class: 'pv-acts' });
+  if (m && m.title && (norm(m.title) !== norm(f.song) || (m.artist && norm(m.artist) !== norm(f.artist)))) {
+    acts.append(h('button', { class: 'btn sm', type: 'button', onclick: () => { $('#fSong').value = m.title; $('#fArtist').value = m.artist || f.artist; renderPreview(); } }, 'ใช้ชื่อตามรายการ: ' + m.title));
+  }
+  if (P.status === 'ok') acts.append(h('button', { class: 'btn sm ghost', type: 'button', onclick: () => { P.match = null; P.locked = true; renderPreview(); } }, 'ไม่ใช่เพลงเหล่านี้'));
+  if (acts.childNodes.length) box.append(acts);
+}
+async function runSearch() {
+  const song = f.song, artist = f.artist;
+  if (song.length < 2) { P.status = 'idle'; P.cands = []; renderCands(); return; }
+  if (P.ctl) P.ctl.abort();
+  const ctl = new AbortController(); P.ctl = ctl; const seq = ++P.seq;
+  P.status = 'loading'; renderCands();
+  try {
+    const res = await itunesSearch(`${song} ${artist}`.trim(), ctl.signal);
+    if (seq !== P.seq) return;
+    P.cands = res; P.status = res.length ? 'ok' : 'none';
+    if (!P.locked) P.match = res.length ? pickBest(res, song, artist) : null;
+  } catch (e) {
+    if (seq !== P.seq || (e && e.name === 'AbortError')) return;
+    P.status = 'error'; P.cands = [];
+  }
+  renderPreview();
+}
+const scheduleSearch = debounce(runSearch, 650);
+function onTextInput() {
+  P.locked = false;
+  if (f.song.length < 2) { P.match = null; P.cands = []; P.status = 'idle'; if (P.ctl) P.ctl.abort(); }
+  renderPreview();
+  scheduleSearch();
+}
+
+/* ----------------------------- ตรวจข้อมูล / ส่ง ----------------------------- */
+function showErr(id, msg, inputId) {
+  const el = $('#' + id); el.textContent = msg; el.hidden = false; if (inputId) $('#' + inputId).classList.add('bad');
+}
+function clearErrs() { ['errStudent', 'errSong', 'errArtist'].forEach((i) => { $('#' + i).hidden = true; }); ['stuInput', 'fSong', 'fArtist', 'fLink'].forEach((i) => $('#' + i).classList.remove('bad')); }
+function validate() {
+  clearErrs();
+  let first = null;
+  if (!P.student) { showErr('errStudent', 'กรุณาเลือกชื่อของคุณจากรายการ', 'stuInput'); first = first || 'stuInput'; }
+  if (!f.song) { showErr('errSong', 'กรุณาพิมพ์ชื่อเพลง', 'fSong'); first = first || 'fSong'; }
+  if (!f.artist) { showErr('errArtist', 'กรุณาพิมพ์ชื่อศิลปิน', 'fArtist'); first = first || 'fArtist'; }
+  if (f.link && !ytId(f.link)) { $('#fLink').classList.add('bad'); updateLinkHelp(); first = first || 'fLink'; }
+  if (first) { $('#' + first).focus(); return false; }
+  return true;
+}
+function updateSaveBtn() {
+  const upd = P.student && P.student.done;
+  $('#saveTxt').textContent = P.saving ? 'กำลังบันทึก…' : (upd ? 'อัปเดตเพลงของฉัน' : 'ส่งเพลง');
+  $('#btnSave').disabled = P.saving;
+  const ic = $('#saveIc');
+  if (P.saving) ic.replaceChildren(h('span', { class: 'spin-s' })); else setIcon(ic, 'check');
+}
+async function submit() {
+  if (P.saving || !validate()) return;
+  const m = P.match, yt = ytId(f.link);
+  const payload = {
+    studentId: P.student.id, song: f.song, artist: f.artist, genre: P.tags.join(', '),
+    link: yt ? f.link : '', note: f.note, art: m ? m.art : '', preview: m ? m.preview : '', trackId: m ? m.trackId : '',
+  };
+  P.saving = true; updateSaveBtn();
+  try {
+    let st;
+    if (API.live()) { const r = await API.save(payload); st = mkStudent(r.student); } else { st = demoSave(payload); }
+    const i = S.students.findIndex((x) => x.id === st.id);
+    if (i >= 0) S.students[i] = st; else S.students.push(st);
+    P.student = st; S.updatedAt = new Date(); P.prefilledFor = st.id; P.prefilledSig = formSig();
+    render(); renderPicked();
+    showSuccess(st);
+    if (API.live()) loadData({ silent: true });
+  } catch (e) {
+    toast(errTh(e), 'err');
+  } finally { P.saving = false; updateSaveBtn(); }
+}
+function showSuccess(s) {
+  const body = $('#dlgSuccessBody'); body.replaceChildren();
+  const card = h('div', { class: 'success-card' }, thumb(s), h('div', { class: 'vinfo' }, avatar(s.name, s.hue),
+    h('div', { class: 'vtext' }, h('div', { class: 'vtitle' }, s.song), h('div', { class: 'vsub' }, s.artist), h('div', { class: 'vsub' }, s.name))));
+  body.append(h('h2', null, 'บันทึกเพลงเรียบร้อยแล้ว 🎉'),
+    h('p', { class: 's' }, API.live() ? 'ข้อมูลถูกบันทึกลง Google Sheet แล้ว' : 'บันทึกในโหมดทดลอง (เก็บในเบราว์เซอร์นี้)'),
+    card,
+    h('div', { class: 'acts' },
+      h('button', { class: 'btn', type: 'button', onclick: () => $('#dlgSuccess').close() }, 'ปิด'),
+      h('button', { class: 'btn', type: 'button', onclick: () => { $('#dlgSuccess').close(); location.hash = '#/dashboard'; } }, 'ไปแดชบอร์ด'),
+      h('button', { class: 'btn red', type: 'button', onclick: () => { $('#dlgSuccess').close(); location.hash = '#/watch/' + encodeURIComponent(s.id); } }, 'ดูหน้าเพลงของฉัน')));
+  const d = $('#dlgSuccess'); if (!d.open) d.showModal();
+}
+function resetForm() {
+  clearFields(); clearErrs(); renderPreview(); renderPicked();
+}
+function initSubmit() {
+  const input = $('#stuInput');
+  input.addEventListener('focus', () => openCombo(true));
+  input.addEventListener('click', () => openCombo(true));
+  input.addEventListener('blur', () => setTimeout(() => openCombo(false), 120));
+  input.addEventListener('input', () => {
+    if (P.student && input.value !== P.student.name) { P.student = null; $('#combo').classList.remove('has-v'); renderPicked(); renderMeta(draftEntry()); updateSaveBtn(); }
+    $('#combo').classList.toggle('has-v', !!input.value);
+    P.comboIdx = 0; openCombo(true);
+  });
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowDown') { ev.preventDefault(); moveCombo(1); }
+    else if (ev.key === 'ArrowUp') { ev.preventDefault(); moveCombo(-1); }
+    else if (ev.key === 'Enter') { if (P.comboOpen && P.comboItems[P.comboIdx]) { ev.preventDefault(); selectStudent(P.comboItems[P.comboIdx]); } }
+    else if (ev.key === 'Escape') openCombo(false);
+  });
+  $('#stuClear').addEventListener('click', () => { P.student = null; input.value = ''; $('#combo').classList.remove('has-v'); renderPicked(); renderMeta(draftEntry()); updateSaveBtn(); input.focus(); });
+  $('#fSong').addEventListener('input', onTextInput);
+  $('#fArtist').addEventListener('input', onTextInput);
+  $('#fLink').addEventListener('input', () => { updateLinkHelp(); renderPreview(); });
+  $('#fNote').addEventListener('input', () => { updateNoteCount(); renderMeta(draftEntry()); });
+  $('#tagAddBtn').addEventListener('click', addCustomTag);
+  $('#tagCustom').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); addCustomTag(); } });
+  $('#btnSave').addEventListener('click', submit);
+  $('#btnReset').addEventListener('click', resetForm);
+  ['fSong', 'fArtist'].forEach((id) => $('#' + id).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); (id === 'fSong' ? $('#fArtist') : $('#fLink')).focus(); } }));
+  renderTags(); updateLinkHelp(); updateNoteCount(); renderPreview(); updateSaveBtn();
+}
+
+/* ===================== ชิ้นส่วนร่วม: thumbnail / การ์ดวิดีโอ ===================== */
+function imgFallback(src, cls) {
+  const im = h('img', { class: cls, src, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
+  im.addEventListener('error', () => im.remove());
+  return im;
+}
+function thumb(s, opts) {
+  const t = h('div', { class: 'thumb' + (s.done ? '' : ' pending') });
+  t.style.setProperty('--h', s.hue);
+  if (!s.done) { t.append(h('div', { class: 'nt' }, icon('music')), h('div', { class: 'pend' }, 'ยังไม่ได้ส่งเพลง')); return t; }
+  const c = coverOf(s);
+  if (c.url && c.kind === 'cover') t.append(imgFallback(c.url, 'cover'));
+  else if (c.url) { const bg = h('div', { class: 'bgimg' }); bg.style.backgroundImage = `url("${c.url}")`; t.append(bg, imgFallback(c.url, 'square')); } else t.append(h('div', { class: 'nt' }, icon('music')));
+  const badge = opts && opts.badge !== undefined ? opts.badge : (s.tags[0] || '');
+  if (badge) t.append(h('span', { class: 'badge' }, badge));
+  if (!opts || opts.hover !== false) t.append(h('div', { class: 'hov' }, h('i', null, icon('play'))));
+  return t;
+}
+function whenText(s) { return s.time ? relTime(s.time) : ''; }
+
+/* ===================== กรอง / จัดเรียง ===================== */
+function matches(s, q) {
+  if (!q) return true;
+  const nq = norm(q);
+  return norm(`${s.name} ${s.song} ${s.artist} ${s.genre}`).includes(nq) || s.id.includes(q.trim()) || String(s.no) === q.trim();
+}
+function filtered() {
+  let list = S.students.filter((s) => matches(s, S.q));
+  if (S.status === 'done') list = list.filter((s) => s.done);
+  else if (S.status === 'pending') list = list.filter((s) => !s.done);
+  if (S.tag) list = list.filter((s) => s.tags.some((t) => norm(t) === norm(S.tag)));
+  const cmp = {
+    recent: (a, b) => (b.done - a.done) || ((b.time ? b.time.getTime() : 0) - (a.time ? a.time.getTime() : 0)) || a.no - b.no,
+    no: (a, b) => a.no - b.no,
+    name: (a, b) => a.name.localeCompare(b.name, 'th'),
+    song: (a, b) => (b.done - a.done) || a.song.localeCompare(b.song, 'th'),
+  }[S.sort];
+  return list.sort(cmp);
+}
+function topTags(n) {
+  const m = new Map();
+  S.students.forEach((s) => s.tags.forEach((t) => { const k = norm(t); const e = m.get(k) || { label: t, n: 0 }; e.n++; m.set(k, e); }));
+  return Array.from(m.values()).sort((a, b) => b.n - a.n).slice(0, n);
+}
+
+/* ===================== หน้า "เพื่อน ๆ ทั้งห้อง" ===================== */
+function renderPeople() {
+  const all = S.students, done = all.filter((s) => s.done).length;
+  const chips = $('#peopleChips'); chips.replaceChildren();
+  const st = (key, label, n) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(S.status === key), onclick: () => { S.status = key; renderPeople(); } }, `${label} ${n}`);
+  chips.append(st('all', 'ทั้งหมด', all.length), st('done', 'ส่งแล้ว', done), st('pending', 'ยังไม่ส่ง', all.length - done));
+  const tt = topTags(7);
+  if (tt.length) chips.append(h('span', { class: 'sep' }), ...tt.map((t) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(!!S.tag && norm(S.tag) === norm(t.label)), onclick: () => { S.tag = (S.tag && norm(S.tag) === norm(t.label)) ? null : t.label; renderPeople(); } }, t.label)));
+  const sel = h('select', { class: 'select', 'aria-label': 'เรียงลำดับ', onchange: (e) => { S.sort = e.target.value; renderPeople(); } },
+    ...[['recent', 'ส่งล่าสุด'], ['no', 'เลขที่'], ['name', 'ชื่อ ก-ฮ'], ['song', 'ชื่อเพลง']].map(([v, l]) => h('option', { value: v, selected: S.sort === v }, l)));
+  chips.append(h('label', { class: 'sort' }, 'เรียงตาม', sel));
+
+  const list = filtered();
+  $('#peopleSub').textContent = S.q ? `ผลการค้นหา “${S.q}” · ${list.length} รายการ` : `${done} จาก ${all.length} คนส่งเพลงแล้ว`;
+  const body = $('#peopleBody'); body.replaceChildren();
+  if (!list.length) { body.append(h('div', { class: 'empty' }, h('b', null, 'ไม่พบรายการที่ตรงกัน'), 'ลองเปลี่ยนคำค้นหาหรือตัวกรอง')); return; }
+  const feed = h('div', { class: 'feed' });
+  list.forEach((s) => {
+    const sub = s.done ? [s.name, whenText(s)].filter(Boolean).join(' · ') : `เลขที่ ${s.no}`;
+    feed.append(h('a', { class: 'vcard' + (s.done ? '' : ' pend'), href: '#/watch/' + encodeURIComponent(s.id), 'aria-label': s.done ? `${s.song} โดย ${s.artist} ส่งโดย ${s.name}` : `${s.name} ยังไม่ส่งเพลง` },
+      thumb(s),
+      h('div', { class: 'vinfo' }, avatar(s.name, s.hue),
+        h('div', { class: 'vtext' },
+          h('div', { class: 'vtitle' }, s.done ? s.song : s.name),
+          h('div', { class: 'vsub one' }, s.done ? s.artist : 'ยังไม่ได้ส่งเพลง'),
+          h('div', { class: 'vsub one' }, sub)))));
+  });
+  body.append(feed);
+}
+
+/* ===================== หน้าดูเพลงรายบุคคล (Watch) ===================== */
+let watchPlayer = null;
+function renderWatch() {
+  const root = $('#view-watch');
+  if (watchPlayer) { watchPlayer.destroy(); watchPlayer = null; }
+  root.replaceChildren();
+  const s = byId(S.watchId);
+  if (!s) {
+    root.append(h('div', { class: 'empty' }, h('b', null, S.students.length ? 'ไม่พบรายการนี้' : 'กำลังโหลดข้อมูล…'), h('a', { class: 'btn', href: '#/people', style: { marginTop: '12px' } }, 'กลับไปรายบุคคล')));
+    return;
+  }
+  document.title = (s.done ? s.song + ' — ' : '') + s.name + ' · NurseTunes';
+  const main = h('div', null);
+  if (!s.done) {
+    const t = thumb(s, { hover: false });
+    main.append(t, h('h1', null, 'ยังไม่ได้ส่งเพลง'),
+      h('div', { class: 'w-row' }, avatar(s.name, s.hue, 'lg'), h('div', { class: 'nm' }, h('b', null, s.name), h('small', null, `เลขที่ ${s.no}`)),
+        h('button', { class: 'btn red', type: 'button', onclick: () => { selectStudent(s); location.hash = '#/'; } }, icon('music'), 'ไปส่งเพลงของคนนี้')));
+  } else {
+    watchPlayer = buildPlayer({ title: s.song, artist: s.artist, art: s.art || (coverOf(s).kind === 'cover' ? coverOf(s).url : ''), preview: s.preview, yt: s.yt, hue: s.hue, hasText: true });
+    main.append(watchPlayer.node, h('h1', null, s.song));
+    main.append(h('div', { class: 'w-row' }, avatar(s.name, s.hue, 'lg'),
+      h('div', { class: 'nm' }, h('b', null, s.artist), h('small', null, `ส่งโดย ${s.name} · เลขที่ ${s.no}`)),
+      h('a', { class: 'btn', href: openUrl(s), target: '_blank', rel: 'noopener noreferrer' }, icon('open'), s.yt ? 'เปิดใน YouTube' : 'ค้นหาใน YouTube'),
+      h('button', { class: 'btn', type: 'button', onclick: async () => { toast((await copyText(`${s.song} — ${s.artist}`)) ? 'คัดลอกชื่อเพลงแล้ว' : 'คัดลอกไม่สำเร็จ', 'ok'); } }, icon('copy'), 'คัดลอกชื่อเพลง')));
+    const meta = [];
+    if (s.time) meta.push(`ส่งเมื่อ ${fmtFull.format(s.time)} (${relTime(s.time)})`);
+    main.append(h('div', { class: 'desc' },
+      s.tags.length ? h('div', { class: 'tags' }, s.tags.map((t) => h('span', { class: 'tag' }, t))) : null,
+      s.note ? h('div', null, s.note) : h('div', { style: { color: 'var(--text-2)' } }, 'ไม่ได้เขียนข้อความถึงเพื่อน'),
+      meta.length ? h('div', { style: { color: 'var(--text-2)', marginTop: '8px', fontSize: '13px' } }, meta.join(' · ')) : null));
+    if (!s.preview && !s.yt) main.append(h('p', { class: 'help' }, 'เพลงนี้ยังไม่มีตัวอย่างเสียงในระบบ กด “ค้นหาใน YouTube” เพื่อฟัง'));
+  }
+  const nav = h('div', { class: 'pv-acts' },
+    h('a', { class: 'btn sm', href: '#/people' }, icon('back'), 'กลับรายบุคคล'));
+  main.append(nav);
+
+  const others = S.students.filter((x) => x.done).sort((a, b) => (b.time ? b.time.getTime() : 0) - (a.time ? a.time.getTime() : 0));
+  const up = h('aside', { class: 'upnext' }, h('h2', null, 'เพลงอื่น ๆ ในห้อง'));
+  others.slice(0, 24).forEach((o) => {
+    up.append(h('a', { class: 'un' + (o.id === s.id ? ' cur' : ''), href: '#/watch/' + encodeURIComponent(o.id) },
+      thumb(o, { hover: false, badge: '' }), h('div', { class: 't' }, h('b', null, o.song), h('small', null, o.artist), h('small', null, o.name))));
+  });
+  if (!others.length) up.append(h('div', { class: 'help' }, 'ยังไม่มีเพลงอื่น'));
+  root.append(h('div', { class: 'watch' }, main, up));
+}
+
+/* ===================== Dashboard ===================== */
+function computeStats() {
+  const all = S.students, done = all.filter((s) => s.done);
+  const total = all.length, n = done.length;
+  const groupBy = (items, keyFn, labelFn) => {
+    const m = new Map();
+    items.forEach((it) => { const k = keyFn(it); if (!k) return; const e = m.get(k) || { n: 0, labels: new Map(), items: [] }; e.n++; e.items.push(it); const l = labelFn(it); e.labels.set(l, (e.labels.get(l) || 0) + 1); m.set(k, e); });
+    return Array.from(m.values()).map((e) => ({ label: Array.from(e.labels.entries()).sort((a, b) => b[1] - a[1])[0][0], n: e.n, items: e.items }))
+      .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label, 'th'));
+  };
+  const artists = groupBy(done, (s) => norm(s.artist), (s) => s.artist);
+  const tagRows = [];
+  done.forEach((s) => s.tags.forEach((t) => tagRows.push({ t, s })));
+  const genres = groupBy(tagRows, (r) => norm(r.t), (r) => r.t).map((g) => ({ label: g.label, n: g.n }));
+  const langs = groupBy(done, (s) => detectLang(s), (s) => detectLang(s)).map((g) => ({ label: g.label, n: g.n }));
+  const songs = groupBy(done, (s) => norm(s.song) + '|' + norm(s.artist), (s) => s.song)
+    .map((g) => ({ label: g.label, n: g.n, artist: g.items[0].artist, item: g.items.slice().sort((a, b) => (b.time ? b.time.getTime() : 0) - (a.time ? a.time.getTime() : 0))[0], who: g.items.map((x) => x.name) }));
+  const latest = done.filter((s) => s.time).sort((a, b) => b.time - a.time).slice(0, 6);
+  const todayKey = fmtYMD.format(new Date());
+  const today = done.filter((s) => s.time && fmtYMD.format(s.time) === todayKey).length;
+  return { total, n, pending: total - n, rate: total ? n / total : 0, artists, genres, langs, songs, latest, today, pendingList: all.filter((s) => !s.done) };
+}
+
+/** กราฟแท่งแนวนอนจัดอันดับ — สีเดียว, ค่าที่ปลายแท่ง, tooltip + โฟกัสคีย์บอร์ด */
+function rankedBars(rows, unit, max) {
+  const top = rows.slice(0, max || 8);
+  const mx = Math.max(1, ...top.map((r) => r.n));
+  const wrap = h('div', { class: 'bars', role: 'list' });
+  top.forEach((r, i) => {
+    const row = h('div', { class: 'brow', role: 'listitem', tabindex: 0, 'aria-label': `อันดับ ${i + 1} ${r.label} ${r.n} ${unit}`, style: { '--r': (r.n / mx).toFixed(4) } },
+      h('div', { class: 'nm', title: r.label }, r.label), h('div', { class: 'area' }, h('div', { class: 'bar' }), h('div', { class: 'val' }, String(r.n))));
+    const show = (x, y) => Tip.show(x, y, `${r.n} ${unit}`, r.label, { key: true });
+    row.addEventListener('pointermove', (e) => show(e.clientX, e.clientY));
+    row.addEventListener('pointerleave', () => Tip.hide());
+    row.addEventListener('focus', () => { const b = row.getBoundingClientRect(); show(b.left + b.width / 2, b.top); });
+    row.addEventListener('blur', () => Tip.hide());
+    wrap.append(row);
+  });
+  if (rows.length > top.length) wrap.append(h('div', { class: 'more-note' }, `แสดง ${top.length} อันดับแรก จากทั้งหมด ${rows.length} รายการ (ดูครบในมุมมองตาราง)`));
+  return wrap;
+}
+function tableView(cols, rows) {
+  return h('div', { class: 'tv-wrap' }, h('table', { class: 'tv' },
+    h('thead', null, h('tr', null, cols.map((c) => h('th', { class: c.num ? 'n' : '' }, c.label)))),
+    h('tbody', null, rows.map((r) => h('tr', null, cols.map((c, i) => h('td', { class: c.num ? 'n' : '' }, String(r[i]))))))));
+}
+function chartCard(cls, title, cap, graph, table) {
+  let tbl = false;
+  const body = h('div', { class: 'chart-body' });
+  const tgl = h('button', { class: 'tgl', type: 'button', 'aria-pressed': 'false', 'aria-label': 'สลับระหว่างกราฟและตาราง', title: 'สลับระหว่างกราฟและตาราง' }, icon('table'));
+  const paint = () => { body.replaceChildren(tbl ? table() : graph()); tgl.setAttribute('aria-pressed', String(tbl)); setIcon(tgl, tbl ? 'chart' : 'table'); };
+  tgl.addEventListener('click', () => { tbl = !tbl; Tip.hide(); paint(); });
+  const card = h('section', { class: 'card ' + cls }, h('div', { class: 'ch-h' }, h('div', null, h('h2', null, title), cap ? h('div', { class: 'cap' }, cap) : null), tgl), body);
+  paint();
+  return card;
+}
+
+/* ---- เส้นสะสมจำนวนผู้ส่งตามเวลา ---- */
+function buildSeries(done, total) {
+  const times = done.filter((s) => s.time).map((s) => s.time.getTime()).sort((a, b) => a - b);
+  if (!times.length) return null;
+  const OFF = 7 * 3600 * 1000, now = Date.now();
+  const span = Math.max(times[times.length - 1], now) - times[0];
+  const unit = span <= 36 * 3600 * 1000 ? 3600 * 1000 : 86400 * 1000;
+  const key = (t) => Math.floor((t + OFF) / unit);
+  const k0 = key(times[0]) - 1, k1 = Math.max(key(times[times.length - 1]), key(now));
+  const counts = new Map(); times.forEach((t) => counts.set(key(t), (counts.get(key(t)) || 0) + 1));
+  const pts = []; let cum = 0;
+  for (let k = k0; k <= k1; k++) { const add = counts.get(k) || 0; cum += add; pts.push({ t: k * unit - OFF, cum, add }); }
+  return { pts, unit, total };
+}
+function lineChart(series) {
+  const wrap = h('div', { class: 'linechart' });
+  if (!series) { wrap.append(h('div', { class: 'empty' }, h('b', null, 'ยังไม่มีข้อมูลเวลา'), 'จะแสดงเมื่อมีคนส่งเพลง')); return wrap; }
+  const { pts, unit, total } = series;
+  const lab = (p) => (unit === 3600000 ? fmtHour.format(new Date(p.t)) : fmtDay.format(new Date(p.t)));
+  const full = (p) => (unit === 3600000 ? `${fmtDay.format(new Date(p.t))} ${fmtHour.format(new Date(p.t))} น.` : fmtDay.format(new Date(p.t)));
+  let idx = pts.length - 1, svg, geom;
+  function draw() {
+    const W = Math.max(320, wrap.clientWidth || 640), H = 250, m = { l: 34, r: 42, t: 14, b: 28 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const x = (i) => m.l + (pts.length === 1 ? 0 : (i / (pts.length - 1)) * iw);
+    const y = (v) => m.t + ih - (v / Math.max(1, total)) * ih;
+    geom = { x, y, W, H };
+    const step = total <= 12 ? 2 : total <= 30 ? 5 : total <= 70 ? 10 : 20;
+    const g = [];
+    for (let v = 0; v <= total; v += step) g.push(svgEl('line', { class: v === 0 ? 'axis' : 'grid', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }), svgEl('text', { x: m.l - 8, y: y(v) + 4, 'text-anchor': 'end' }, v));
+    g.push(svgEl('line', { class: 'ref', x1: m.l, x2: W - m.r, y1: y(total), y2: y(total) }), svgEl('text', { x: W - m.r + 6, y: y(total) + 4 }, total));
+    const nt = Math.min(pts.length, W < 480 ? 3 : 5);
+    for (let k = 0; k < nt; k++) { const i = nt === 1 ? 0 : Math.round((k / (nt - 1)) * (pts.length - 1)); g.push(svgEl('text', { x: x(i), y: H - 8, 'text-anchor': k === 0 ? 'start' : k === nt - 1 ? 'end' : 'middle' }, lab(pts[i]))); }
+    const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.cum).toFixed(1)}`).join('');
+    const area = `${line}L${x(pts.length - 1).toFixed(1)},${y(0)}L${x(0)},${y(0)}Z`;
+    const last = pts[pts.length - 1];
+    const cross = svgEl('line', { class: 'cross', y1: m.t, y2: m.t + ih, x1: x(idx), x2: x(idx), style: 'display:none' });
+    const dot = svgEl('circle', { class: 'dot', r: 5, cx: x(idx), cy: y(pts[idx].cum), style: 'display:none' });
+    const overlay = svgEl('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent' });
+    svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img', tabindex: 0, 'aria-label': `กราฟเส้นแสดงจำนวนผู้ส่งเพลงสะสม ล่าสุด ${last.cum} จาก ${total} คน ใช้ปุ่มลูกศรซ้ายขวาเพื่อดูแต่ละช่วงเวลา` },
+      ...g, svgEl('path', { class: 'area', d: area }), svgEl('path', { class: 'line', d: line }),
+      svgEl('circle', { class: 'dot', r: 5, cx: x(pts.length - 1), cy: y(last.cum) }),
+      svgEl('text', { class: 'endlbl', x: x(pts.length - 1) + 10, y: y(last.cum) - 8, 'text-anchor': pts.length > 1 && x(pts.length - 1) > W - m.r - 14 ? 'end' : 'start', dx: x(pts.length - 1) > W - m.r - 14 ? -2 : 0 }, `${last.cum} คน`),
+      cross, dot, overlay);
+    const showAt = (i, px, py) => {
+      idx = clamp(i, 0, pts.length - 1); const p = pts[idx];
+      cross.style.display = ''; dot.style.display = '';
+      cross.setAttribute('x1', x(idx)); cross.setAttribute('x2', x(idx)); dot.setAttribute('cx', x(idx)); dot.setAttribute('cy', y(p.cum));
+      const r = svg.getBoundingClientRect(); const sc = r.width / W;
+      Tip.show(px != null ? px : r.left + x(idx) * sc, py != null ? py : r.top + y(p.cum) * sc, `${p.cum} คน (${Math.round((p.cum / Math.max(1, total)) * 100)}%)`, full(p), { key: true, extra: p.add ? `ช่วงนี้ส่งเพิ่ม ${p.add} คน` : 'ช่วงนี้ไม่มีคนส่งเพิ่ม' });
+    };
+    const hide = () => { cross.style.display = 'none'; dot.style.display = 'none'; Tip.hide(); };
+    overlay.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); const sc = r.width / W; const px = (e.clientX - r.left) / sc; showAt(Math.round(((px - m.l) / iw) * (pts.length - 1)), e.clientX, e.clientY); });
+    overlay.addEventListener('pointerleave', hide);
+    svg.addEventListener('blur', hide);
+    svg.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { e.preventDefault(); showAt(idx - 1); } else if (e.key === 'ArrowRight') { e.preventDefault(); showAt(idx + 1); } else if (e.key === 'Escape') hide(); });
+    wrap.replaceChildren(svg);
+  }
+  draw();
+  if (typeof ResizeObserver !== 'undefined') {
+    let lastW = wrap.clientWidth;
+    new ResizeObserver(() => { const w = wrap.clientWidth; if (w && Math.abs(w - lastW) > 4) { lastW = w; draw(); } }).observe(wrap);
+  }
+  return wrap;
+}
+
+function kpi(label, value, extra, cls) {
+  return h('div', { class: 'tile ' + (cls || '') }, h('div', { class: 'l' }, label), h('div', { class: 'v' }, value), extra);
+}
+function renderDash() {
+  const st = computeStats();
+  $('#dashSub').textContent = `ข้อมูลล่าสุด ${S.updatedAt ? fmtFull.format(S.updatedAt) : '-'} · ${API.live() ? 'จาก Google Sheet (รีเฟรชอัตโนมัติทุก 1 นาที)' : 'โหมดทดลอง'}`;
+  const pct = Math.round(st.rate * 100);
+  const body = $('#dashBody'); body.replaceChildren();
+  const kp = h('div', { class: 'kpis' },
+    h('div', { class: 'tile hero-t' }, h('div', { class: 'l' }, 'อัตราการส่งแบบสำรวจ'),
+      h('div', { class: 'v' }, `${pct}%`),
+      h('div', { class: 'meter', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct, 'aria-label': 'อัตราการส่งแบบสำรวจ' }, h('i', { style: { width: pct + '%' } })),
+      h('div', { class: 'meter-cap' }, h('span', null, `ส่งแล้ว ${st.n} จาก ${st.total} คน`), h('span', null, `เหลืออีก ${st.pending} คน`))),
+    kpi('นักศึกษาทั้งหมด', String(st.total), h('div', { class: 'delta flat' }, 'รุ่น 1 · ป.ตรีสาขาอื่น')),
+    kpi('ส่งแล้ว', String(st.n), st.today ? h('div', { class: 'delta' }, icon('up', 'x'), `วันนี้ +${st.today} คน`) : h('div', { class: 'delta flat' }, 'วันนี้ยังไม่มีคนส่งเพิ่ม')),
+    kpi('ยังไม่ส่ง', String(st.pending), h('div', { class: 'delta flat' }, st.pending ? 'ดูรายชื่อด้านล่าง' : 'ส่งครบทุกคนแล้ว 🎉')));
+  body.append(kp);
+
+  const grid = h('div', { class: 'dgrid' });
+  const noData = () => h('div', { class: 'empty' }, h('b', null, 'ยังไม่มีข้อมูล'), 'จะแสดงเมื่อมีคนส่งเพลง');
+  const tbl = (rows, labelCol, unit) => () => (rows.length ? tableView([{ label: labelCol }, { label: unit, num: true }], rows.map((r) => [r.label, r.n])) : noData());
+  grid.append(
+    chartCard('c-6', 'ศิลปินที่เพื่อน ๆ ฟังบ่อยที่สุด', 'นับจำนวนคนที่เลือกศิลปินนั้น', () => (st.artists.length ? rankedBars(st.artists, 'คน', 8) : noData()), tbl(st.artists, 'ศิลปิน', 'จำนวนคน')),
+    chartCard('c-6', 'แนวเพลง / อารมณ์ยอดนิยม', 'คนหนึ่งเลือกได้หลายแท็ก', () => (st.genres.length ? rankedBars(st.genres, 'คน', 8) : noData()), tbl(st.genres, 'แนวเพลง/อารมณ์', 'จำนวนคน')),
+    chartCard('c-8', 'ความคืบหน้าการส่ง', `จำนวนคนที่ส่งสะสม เทียบกับทั้งหมด ${st.total} คน`, () => lineChart(buildSeries(S.students.filter((s) => s.done), st.total)),
+      () => { const se = buildSeries(S.students.filter((s) => s.done), st.total); return se ? tableView([{ label: 'ช่วงเวลา' }, { label: 'ส่งเพิ่ม', num: true }, { label: 'สะสม', num: true }], se.pts.map((p) => [se.unit === 3600000 ? `${fmtDay.format(new Date(p.t))} ${fmtHour.format(new Date(p.t))}` : fmtDay.format(new Date(p.t)), p.add, p.cum])) : noData(); }),
+    chartCard('c-4', 'ภาษาของชื่อเพลง', 'ดูจากตัวอักษรในชื่อเพลง', () => (st.langs.length ? rankedBars(st.langs, 'เพลง', 6) : noData()), tbl(st.langs, 'ภาษา', 'จำนวนเพลง')));
+
+  const rep = st.songs.filter((x) => x.n >= 2).slice(0, 6);
+  const trend = h('section', { class: 'card c-4' }, h('div', { class: 'ch-h' }, h('div', null, h('h2', null, 'เพลงที่เลือกตรงกัน'), h('div', { class: 'cap' }, 'เพลงเดียวกันที่เพื่อนหลายคนชอบ'))));
+  if (!rep.length) trend.append(h('div', { class: 'empty' }, h('b', null, 'ยังไม่มีเพลงที่ซ้ำกัน'), 'ทุกคนมีรสนิยมไม่เหมือนกันเลย')); else {
+    const ol = h('ol', { class: 'rank' });
+    rep.forEach((r, i) => ol.append(h('li', { title: r.who.join(', ') }, h('span', { class: 'no' }, i + 1), rankArt(r.item), h('div', { class: 'tx' }, h('b', null, r.label), h('small', null, r.artist)), h('span', { class: 'ct' }, `${r.n} คน`))));
+    trend.append(ol);
+  }
+  const latest = h('section', { class: 'card c-4' }, h('div', { class: 'ch-h' }, h('div', null, h('h2', null, 'ส่งล่าสุด'), h('div', { class: 'cap' }, 'คลิกเพื่อดูหน้าเพลง'))));
+  if (!st.latest.length) latest.append(noData()); else {
+    const ol = h('ol', { class: 'rank' });
+    st.latest.forEach((s) => ol.append(h('li', null, h('a', { href: '#/watch/' + encodeURIComponent(s.id), style: { display: 'flex', alignItems: 'center', gap: '12px', width: '100%', minWidth: 0 } }, rankArt(s), h('div', { class: 'tx' }, h('b', null, s.song), h('small', null, `${s.artist} · ${s.name}`)), h('span', { class: 'sub', style: { fontSize: '12px', color: 'var(--text-2)', whiteSpace: 'nowrap' } }, relTime(s.time))))));
+    latest.append(ol);
+  }
+  const pend = h('section', { class: 'card c-4' }, h('div', { class: 'ch-h' }, h('div', null, h('h2', null, `ยังไม่ส่ง (${st.pending})`), h('div', { class: 'cap' }, 'คลิกชื่อเพื่อไปส่งเพลงให้คนนั้น'))));
+  if (!st.pendingList.length) pend.append(h('div', { class: 'empty' }, h('b', null, 'ส่งครบทุกคนแล้ว 🎉'))); else {
+    const box = h('div', { class: 'pend-list' });
+    st.pendingList.forEach((s) => box.append(h('button', { class: 'tag', type: 'button', style: { border: 0, cursor: 'pointer' }, onclick: () => { selectStudent(s); location.hash = '#/'; } }, `${s.no}. ${s.name}`)));
+    pend.append(box);
+  }
+  grid.append(trend, latest, pend);
+  body.append(grid);
+}
+function rankArt(s) {
+  const a = h('span', { class: 'art' }, icon('music'));
+  a.style.setProperty('--h', s.hue);
+  const c = coverOf(s); if (c.url) a.append(imgFallback(c.url, ''));
+  return a;
+}
+
+/* ===================== ส่งออก / คัดลอก ===================== */
+function csvCell(v) {
+  let s = String(v == null ? '' : v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+function exportCsv() {
+  const head = ['ลำดับที่', 'รหัสนักศึกษา', 'ชื่อ-นามสกุล', 'ชื่อเพลงที่ชอบ/ฟังบ่อย', 'ชื่อศิลปิน', 'แนวเพลง/อารมณ์', 'ลิงก์ตัวอย่างเพลง (YouTube)', 'ข้อความถึงเพื่อน', 'เวลาที่บันทึก', 'สถานะ'];
+  const rows = S.students.map((s) => [s.no, s.id, s.name, s.song, s.artist, s.genre, s.link, s.note, s.time ? fmtFull.format(s.time) : '', s.done ? 'กรอกแล้ว' : 'ยังไม่กรอก']);
+  const csv = '﻿' + [head, ...rows].map((r) => r.map(csvCell).join(',')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = h('a', { href: url, download: `nursetunes-${fmtYMD.format(new Date())}.csv` });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast('ดาวน์โหลดไฟล์ CSV แล้ว');
+}
+async function copyPending() {
+  const list = S.students.filter((s) => !s.done);
+  if (!list.length) { toast('ทุกคนส่งเพลงครบแล้ว 🎉'); return; }
+  const ok = await copyText(`ยังไม่ส่งเพลง (${list.length} คน)\n` + list.map((s) => `${s.no}. ${s.name}`).join('\n'));
+  toast(ok ? `คัดลอกรายชื่อ ${list.length} คนแล้ว` : 'คัดลอกไม่สำเร็จ', ok ? 'ok' : 'err');
+}
+
+/* ===================== Render หลัก / Router / การตั้งค่า ===================== */
+const studentsSig = () => S.students.map((s) => [s.id, s.song, s.artist, s.genre, s.link, s.note, s.art, s.preview, s.time ? s.time.getTime() : ''].join('\u0001')).join('\u0002');
+const dashSubText = () => `ข้อมูลล่าสุด ${S.updatedAt ? fmtFull.format(S.updatedAt) : '-'} · ${API.live() ? 'จาก Google Sheet (รีเฟรชอัตโนมัติทุก 1 นาที)' : 'โหมดทดลอง'}`;
+
+function renderChrome() {
+  const total = S.students.length, done = S.students.filter((s) => s.done).length;
+  $('#cntAll').textContent = total || ''; $('#cntDone').textContent = total ? done : ''; $('#cntPend').textContent = total ? total - done : '';
+  const pill = $('#modePill'); const live = API.live();
+  pill.className = 'mode-pill' + (live && !S.error ? ' live' : '');
+  pill.lastChild.textContent = !live ? 'โหมดทดลอง (ยังไม่เชื่อม Sheet)' : S.error ? 'เชื่อมต่อ Sheet ไม่ได้' : 'เชื่อม Google Sheet แล้ว';
+  const b = $('#banner'); b.replaceChildren();
+  if (!live) {
+    b.append(h('div', { class: 'banner' }, h('span', { class: 'tag' }, 'โหมดทดลอง'),
+      h('div', { class: 'grow' }, 'ยังไม่ได้เชื่อม Google Sheet — ข้อมูลที่กรอกจะเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น'),
+      h('button', { class: 'btn sm', type: 'button', onclick: openSettings }, 'ตั้งค่า')));
+  } else if (S.error) {
+    b.append(h('div', { class: 'banner err', role: 'alert' }, h('b', null, 'เชื่อมต่อ Google Sheet ไม่สำเร็จ'),
+      h('div', { class: 'grow' }, errTh(S.error)),
+      h('button', { class: 'btn sm', type: 'button', onclick: () => loadData() }, 'ลองใหม่'),
+      h('button', { class: 'btn sm', type: 'button', onclick: openSettings }, 'ตั้งค่า')));
+  }
+}
+function render() {
+  renderChrome();
+  if (S.view === 'submit') { if (P.comboOpen) renderCombo(); renderPicked(); updateSaveBtn(); return; }
+  if (!S.students.length && S.view !== 'watch') {
+    const msg = h('div', { class: 'empty' }, S.loading ? 'กำลังโหลดรายชื่อ…' : 'ยังไม่พบรายชื่อนักศึกษา');
+    if (S.view === 'people') { $('#peopleChips').replaceChildren(); $('#peopleBody').replaceChildren(msg); } else $('#dashBody').replaceChildren(msg);
+    return;
+  }
+  if (S.view === 'people') renderPeople();
+  else if (S.view === 'dash') renderDash();
+  else if (S.view === 'watch') renderWatch();
+}
+
+async function loadData(opts) {
+  opts = opts || {};
+  if (S.loading) return;
+  S.loading = true;
+  document.body.classList.toggle('loading', !!opts.silent === false && S.students.length > 0);
+  const before = studentsSig(), hadErr = !!S.error;
+  try {
+    if (API.live()) {
+      const j = await API.list();
+      S.students = (j.students || []).map(mkStudent);
+      S.updatedAt = j.updatedAt ? new Date(j.updatedAt) : new Date();
+    } else { S.students = demoStudents(); S.updatedAt = new Date(); }
+    S.error = null;
+  } catch (e) {
+    S.error = e;
+    if (!S.students.length) S.students = ROSTER.map((r) => mkStudent({ no: r[0], id: r[1], first: r[2], last: r[3] }));
+  } finally { S.loading = false; document.body.classList.remove('loading'); }
+  if (P.student) { const n = byId(P.student.id); if (n) P.student = n; }
+  const changed = before !== studentsSig() || hadErr !== !!S.error;
+  if (!opts.silent || changed) render();
+  else if (S.view === 'dash') $('#dashSub').textContent = dashSubText();
+  if (!loadData.restored && S.students.length) {
+    loadData.restored = true;
+    const me = byId(LS.get('nursetunes.me', ''));
+    if (me && !P.student) selectStudent(me);
+  }
+}
+
+/* ----------------------------- router ----------------------------- */
+function route() {
+  const hash = location.hash || '#/';
+  let view = 'submit', id = null, m;
+  if ((m = hash.match(/^#\/watch\/(.+)$/))) { view = 'watch'; try { id = decodeURIComponent(m[1]); } catch (_) { id = m[1]; } }
+  else if (hash.startsWith('#/dashboard')) view = 'dash';
+  else if (hash.startsWith('#/people')) view = 'people';
+  const changed = view !== S.view || id !== S.watchId;
+  S.view = view; S.watchId = id;
+  Sound.stop(); Tip.hide();
+  $$('.view').forEach((v) => { v.hidden = v.id !== 'view-' + view; });
+  const navKey = view === 'watch' ? 'people' : view;
+  $$('[data-nav]').forEach((b) => { if (b.dataset.nav === navKey) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  document.title = { submit: 'ส่งเพลงของฉัน', dash: 'แดชบอร์ดสรุปผล', people: 'เพื่อน ๆ ทั้งห้อง', watch: 'ดูเพลง' }[view] + ' · NurseTunes';
+  document.body.classList.remove('drawer');
+  if (changed) window.scrollTo(0, 0);
+  render();
+}
+
+/* ----------------------------- ตั้งค่า ----------------------------- */
+function openSettings() {
+  const d = $('#dlgSettings');
+  $('#setUrl').value = LS.get('nursetunes.api', '');
+  const own = LS.get('nursetunes.api', '');
+  $('#setStatus').textContent = API.live() ? (own && API_RE.test(own) ? 'กำลังใช้ URL ที่ตั้งค่าในเบราว์เซอร์นี้' : 'กำลังใช้ URL ที่ตั้งไว้ในไฟล์ (API_URL)') : 'ยังไม่ได้เชื่อม Google Sheet — ตอนนี้อยู่ในโหมดทดลอง';
+  $('#setHelp').className = 'help'; $('#setHelp').textContent = 'ใช้สำหรับทดลองในเครื่องนี้ ถ้าจะให้ทุกคนใช้ ให้นำ URL ไปใส่ที่ค่า API_URL ในไฟล์ index.html (ดูคู่มือ)';
+  $('#demoTools').hidden = API.live();
+  if (!d.open) d.showModal();
+}
+function setHelp(msg, kind) { const el = $('#setHelp'); el.className = 'help' + (kind ? ' ' + kind : ''); el.textContent = msg; }
+function initSettings() {
+  $('#btnSettings').addEventListener('click', openSettings);
+  $('#setClose').addEventListener('click', () => $('#dlgSettings').close());
+  $('#setTest').addEventListener('click', async () => {
+    const u = $('#setUrl').value.trim() || String(CONFIG.API_URL || '').trim();
+    if (!u) { setHelp('ยังไม่ได้ใส่ URL', 'err'); return; }
+    if (!API_RE.test(u)) { setHelp('URL ต้องเป็นลิงก์เว็บแอป Apps Script ที่ขึ้นต้น https://script.google.com/ และลงท้าย /exec', 'err'); return; }
+    setHelp('กำลังทดสอบ…');
+    try { await API.ping(u); setHelp('✓ เชื่อมต่อสำเร็จ — กด “บันทึก” เพื่อใช้ URL นี้', 'ok'); } catch (e) { setHelp('เชื่อมต่อไม่ได้: ' + errTh(e), 'err'); }
+  });
+  $('#setSave').addEventListener('click', () => {
+    const u = $('#setUrl').value.trim();
+    if (u && !API_RE.test(u)) { setHelp('URL ต้องเป็นลิงก์เว็บแอป Apps Script ที่ขึ้นต้น https://script.google.com/ และลงท้าย /exec', 'err'); return; }
+    if (u) LS.set('nursetunes.api', u); else LS.del('nursetunes.api');
+    $('#dlgSettings').close(); toast(u ? 'บันทึก URL แล้ว กำลังโหลดข้อมูล…' : 'ล้างค่าแล้ว');
+    loadData();
+  });
+  $('#setClear').addEventListener('click', () => { LS.del('nursetunes.api'); $('#dlgSettings').close(); loadData(); });
+  $('#demoFill').addEventListener('click', () => { demoFill(); $('#dlgSettings').close(); loadData(); toast('เติมข้อมูลตัวอย่างสมมติแล้ว'); });
+  $('#demoWipe').addEventListener('click', () => { LS.del(DEMO_KEY); $('#dlgSettings').close(); loadData(); toast('ล้างข้อมูลทดลองแล้ว'); });
+}
+
+/* ----------------------------- theme / chrome ----------------------------- */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t; LS.set('nursetunes.theme', t);
+  const b = $('#btnTheme'); setIcon(b, t === 'dark' ? 'sun' : 'moon'); b.setAttribute('aria-pressed', String(t === 'dark'));
+  b.title = t === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด';
+}
+function initChrome() {
+  hydrate();
+  applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+  $('#btnTheme').addEventListener('click', () => { applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); render(); });
+  if (LS.get('nursetunes.mini', '') === '1') document.body.classList.add('mini');
+  $('#btnMenu').addEventListener('click', () => {
+    if (innerWidth <= 900) document.body.classList.toggle('drawer');
+    else { document.body.classList.toggle('mini'); LS.set('nursetunes.mini', document.body.classList.contains('mini') ? '1' : '0'); }
+  });
+  $('#scrim').addEventListener('click', () => document.body.classList.remove('drawer'));
+  $$('[data-route]').forEach((b) => b.addEventListener('click', () => { if (location.hash === b.dataset.route || (b.dataset.route === '#/' && !location.hash)) route(); else location.hash = b.dataset.route; }));
+  $$('[data-quick]').forEach((b) => b.addEventListener('click', () => {
+    S.status = b.dataset.quick; S.tag = null; S.q = ''; $('#searchInput').value = ''; $('#searchForm').classList.remove('has-q');
+    if (location.hash === '#/people') route(); else location.hash = '#/people';
+  }));
+  $('#btnRefresh').addEventListener('click', async () => { const b = $('#btnRefresh'); b.disabled = true; await loadData(); b.disabled = false; toast(S.error ? 'โหลดข้อมูลไม่สำเร็จ' : 'อัปเดตข้อมูลแล้ว', S.error ? 'err' : 'ok'); });
+  $('#btnCsv').addEventListener('click', exportCsv);
+  $('#btnCopyPend').addEventListener('click', copyPending);
+
+  const si = $('#searchInput'), sf = $('#searchForm');
+  si.addEventListener('input', () => {
+    S.q = si.value; sf.classList.toggle('has-q', !!si.value);
+    if (S.view !== 'people') location.hash = '#/people'; else renderPeople();
+  });
+  sf.addEventListener('submit', (e) => { e.preventDefault(); if (S.view !== 'people') location.hash = '#/people'; document.body.classList.remove('msearch'); si.blur(); });
+  $('#searchClear').addEventListener('click', () => { si.value = ''; S.q = ''; sf.classList.remove('has-q'); si.focus(); if (S.view === 'people') renderPeople(); });
+  $('#btnMSearch').addEventListener('click', () => { document.body.classList.toggle('msearch'); if (document.body.classList.contains('msearch')) si.focus(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !e.ctrlKey && !e.metaKey) { e.preventDefault(); document.body.classList.add('msearch'); si.focus(); }
+  });
+  $('#courseChips').append(h('span', { class: 'chip static' }, CONFIG.COURSE), h('span', { class: 'chip static' }, CONFIG.INSTITUTION));
+  $('#courseFoot').textContent = `${CONFIG.COURSE} · ${CONFIG.INSTITUTION}`;
+  ['dlgSuccess', 'dlgSettings'].forEach((id) => { const d = $('#' + id); d.addEventListener('click', (e) => { if (e.target === d) d.close(); }); });
+}
+
+function boot() {
+  initChrome();
+  initSettings();
+  initSubmit();
+  window.addEventListener('hashchange', route);
+  route();
+  loadData();
+  setInterval(() => { if (!document.hidden) loadData({ silent: true }); }, CONFIG.REFRESH_MS);
+}
+boot();
+
+
+</script>
+</body>
+</html>
